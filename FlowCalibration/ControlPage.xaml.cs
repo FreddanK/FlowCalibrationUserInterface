@@ -25,14 +25,20 @@ namespace FlowCalibration
         public Page2()
         {
             InitializeComponent();
-            DataContext = this;
-            Double dt = 0.1;
-            FlowProfileGenerator flowProfileGenerator = new FlowProfileGenerator(dt);
-            this.Points = flowProfileGenerator.SineProfile(1, 1);
+            this.DataContext = this;
 
-          
+            this.PlotTitle = "Flow Profile";
 
-            this.PlotTitle = "Example plot";
+            this.FlowProfilePlot = new PlotModel { Title = this.PlotTitle };
+            LineSeries lineSeries = ProfileGenerator.Square(1, 1, 0.1);
+            this.FlowProfilePlot.Series.Add(lineSeries);
+            this.FlowProfilePlot.Series.Add(ProfileGenerator.Sine(1,1,0.5));
+
+            this.Points = lineSeries.Points;
+
+
+
+
             //DataPointsListView.ItemsSource = this.Points;
         }
 
@@ -43,55 +49,42 @@ namespace FlowCalibration
 
         public string PlotTitle { get; private set; }
 
+        public PlotModel FlowProfilePlot { get; private set; }
+
         public IList<DataPoint> Points { get; private set; }
     }
 
-    public class FlowProfileGenerator
+    public class ProfileGenerator
     {
-        public FlowProfileGenerator(Double samplingInterval)
-        {
-            this.SamplingInterval = samplingInterval;
-        }
-
-        public List<DataPoint> SineProfile(Double amplitude, Double frequency)
+        public static LineSeries Sine(Double amplitude, Double frequency, Double samplingInterval)
         { //amplitude (flow), frequency (rad/s)
             Double period = 2 * Math.PI / frequency;    //period (s)
 
-            List<DataPoint> points = new List<DataPoint>();
+            LineSeries lineSeries = new LineSeries();
+            lineSeries.Title = "Sine";
 
-            for( Double x = 0; x <= period; x += this.SamplingInterval)
+            for (Double x = 0; x <= period; x += samplingInterval)
             {
                 Double y = amplitude * Math.Sin(x);
-                points.Add(new DataPoint(x, y));
-            } 
-            
-            return points;
+                lineSeries.Points.Add(new DataPoint(x, y));
+            }
+
+            return lineSeries;
         }
 
-        public static List<DataPoint> SquareProfile(Double amplitude, Double frequency)
-        {
-            List<DataPoint> points = new List<DataPoint>();
-            return points;
-        }
+        public static LineSeries Square(Double amplitude, Double frequency, Double samplingInterval)
+        { //amplitude (flow), frequency (rad/s)
+            Double period = 2 * Math.PI / frequency;    //period (s)
 
-        public static List<DataPoint> RampProfile(Double amplitude, Double frequency)
-        {
-            List<DataPoint> points = new List<DataPoint>();
-            return points;
-        }
+            LineSeries lineSeries = new LineSeries{ Title = "Square" };
 
-        public static List<DataPoint> TriangleProfile(Double amplitude, Double frequency)
-        {
-            List<DataPoint> points = new List<DataPoint>();
-            return points;
-        }
+            for (Double x = 0; x <= period; x += samplingInterval)
+            {
+                Double y = amplitude * Math.Sign(Math.Sin(x));
+                lineSeries.Points.Add(new DataPoint(x, y));
+            }
 
-        public static List<DataPoint> BreathingProfile(Double amplitude, Double frequency)
-        {
-            List<DataPoint> points = new List<DataPoint>();
-            return points;
+            return lineSeries;
         }
-
-        public Double SamplingInterval { get; set; } // Sampling interval (seconds)
     }
 }

@@ -40,10 +40,6 @@
             </ListView>
         </StackPanel>
         <Button x:Name="BackToStartPageButton" Grid.Row="2" Content="To Start" Click="BackToStartPageButton_Click"/>
-        <oxy:Plot Grid.Column="1" Grid.Row="1" Title="{Binding PlotTitle}">
-            <oxy:Plot.Series>
-            <oxy:LineSeries ItemsSource="{Binding Points}"/>
-            </oxy:Plot.Series>
-        </oxy:Plot>
+        <oxy:PlotView Grid.Column="1" Grid.Row="1" Model="{Binding FlowProfilePlot}"/>
     </Grid>
 </Page>
