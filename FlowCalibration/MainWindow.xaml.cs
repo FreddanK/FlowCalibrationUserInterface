@@ -29,12 +29,14 @@ namespace FlowCalibration
 
         private void NavigateToStartPage(object sender, RoutedEventArgs e)
         {
-            MainFrame.NavigationService.Navigate(new Page1());
+            MainFrame.NavigationService.Navigate(new StartPage());
         }
 
         private void Exit_MenuItem_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
         }
+
+        private void StartPage_MenuItem_Click(object sender, RoutedEventArgs e) => NavigateToStartPage(sender, e);
     }
 }
