@@ -120,6 +120,7 @@ namespace FlowCalibration
         }
         public static LineSeries Triangle(Double amplitude, Double frequency, Double samplingInterval)
         {   //amplitude (flow), frequency (rad/s)
+            // https://en.wikipedia.org/wiki/Waveform
             Double period = 2 * Math.PI / frequency;    //period (s)
 
             LineSeries lineSeries = new LineSeries { Title = "Triangle" };
@@ -128,6 +129,39 @@ namespace FlowCalibration
                 double y = (2*amplitude/Math.PI) * Math.Asin(Math.Sin((2*Math.PI*x)/period)) 
                 lineSeries.Points.Add(new DataPoint(x, y));
 
+            }
+            return lineSeries
+            }
+        public static LineSeries Peaks(Double amplitude, Double frequency, Double samplingInterval)
+        {   //amplitude (flow), frequency (rad/s)
+            
+            Double period = 2 * Math.PI / frequency;    //period (s)
+
+            LineSeries lineSeries = new LineSeries { Title = "Peaks" };
+            double t1 = period / 4;
+
+            for (double x = 0; x <= period; x += samplingInterval)
+            {
+                if (x <= t1)
+                {
+                    double y = (2 * amplitude / Math.PI) * Math.Asin(Math.Sin((2 * Math.PI * x) / (period/2)));
+                    lineSeries.Points.Add(new DataPoint(x, y));
+                }
+                else if (x > t1 && x <= t1*2)
+                {
+                    double y = 0;
+                    lineSeries.Points.Add(new DataPoint(x, y));
+                }
+                else if (x > t1*2 && x <= t1 * 3)
+                {
+                    double y = -(2 * amplitude / Math.PI) * Math.Asin(Math.Sin((2 * Math.PI * x) / (period / 2)));
+                    lineSeries.Points.Add(new DataPoint(x, y));
+                }
+                else if (x > t1*3)
+                {
+                    double y = 0;
+                    lineSeries.Points.Add(new DataPoint(x, y));
+                }
             }
             return lineSeries
             }
