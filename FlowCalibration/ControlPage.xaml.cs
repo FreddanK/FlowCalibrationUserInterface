@@ -86,5 +86,24 @@ namespace FlowCalibration
 
             return lineSeries;
         }
+        public static LineSeries Triangle(Double amplitude, Double frequency, Double samplingInterval)
+        {   //amplitude (flow), frequency (rad/s)
+            Double period = 2 * Math.PI / frequency;    //period (s)
+
+            LineSeries lineSeries = new LineSeries { Title = "Triangle" };
+
+            Double w = period / 4;
+
+            for (int part = -1; part <= 1; part += 2;){
+                for (Double x = -w; w <= period; x += samplingInterval)
+                {
+
+                    Double y = part * (amplitude - amplitude * Math.Abs(x) / w);
+                    Double time = x - part * w + period / 2;
+                    lineSeries.Points.Add(new DataPoint(time, y));
+                }
+            }
+            return lineSeries
+            }
     }
 }
