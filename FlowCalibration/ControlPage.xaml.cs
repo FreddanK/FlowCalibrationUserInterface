@@ -124,16 +124,10 @@ namespace FlowCalibration
 
             LineSeries lineSeries = new LineSeries { Title = "Triangle" };
 
-            Double w = period / 4;
+            for (double x = 0; x <= period; x+= samplingInterval){
+                double y = (2*amplitude/Math.PI) * Math.Asin(Math.Sin((2*Math.PI*x)/period)) 
+                lineSeries.Points.Add(new DataPoint(x, y));
 
-            for (int part = -1; part <= 1; part += 2;){
-                for (Double x = -w; w <= period; x += samplingInterval)
-                {
-
-                    Double y = part * (amplitude - amplitude * Math.Abs(x) / w);
-                    Double time = x - part * w + period / 2;
-                    lineSeries.Points.Add(new DataPoint(time, y));
-                }
             }
             return lineSeries
             }
