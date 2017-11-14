@@ -22,7 +22,17 @@
         <TextBlock Text="Data Control" FontSize="16" HorizontalAlignment="Center"/>
         <TextBlock Grid.Column="1" Text="Plot window" FontSize="16" HorizontalAlignment="Center"/>
         <ComboBox Name="Profiles_ComboBox" SelectedValuePath="Content" Margin="20" ItemsSource="{Binding FlowProfileNames}" SelectionChanged="Profiles_ComboBox_SelectionChanged"/>
-        <ListView Grid.Row="1" Name="DataPointsListView"  Margin="20" ItemsSource="{Binding Points}">
+
+        <StackPanel Grid.Row="1" Margin="20 0">
+            <TextBlock Text="Amplitude:"/>
+            <TextBox Name="Amplitude_TextBox" Text="{Binding Amplitude}" PreviewKeyUp="Parameter_TextBox_LostFocus"/>
+            <TextBlock Text="Frequency:"/>
+            <TextBox Name="Frequency_TextBox" Text="{Binding Frequency}" PreviewKeyUp="Parameter_TextBox_LostFocus"/>
+            <TextBlock  Text="Sampling Interval"/>
+            <TextBox Name="SamplingInterval_TextBox" Text="{Binding SamplingInterval}" PreviewKeyUp="Parameter_TextBox_LostFocus"/>
+        </StackPanel>
+        
+        <ListView Grid.Row="2" Name="DataPointsListView"  Margin="20" ItemsSource="{Binding Points}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Time" DisplayMemberBinding="{Binding X}" Width="80"/>

@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using OxyPlot;
 using OxyPlot.Series;
 using System.Collections.ObjectModel;
+using System.Globalization;
 
 namespace FlowCalibration
 {
@@ -32,19 +33,27 @@ namespace FlowCalibration
 
         private void Profiles_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            String SelectedProfileName = Profiles_ComboBox.SelectedItem.ToString();
-            switch (SelectedProfileName)
-            {
-                case "Sine":
-                    ViewModel.UpdatePlot(ProfileGenerator.Sine(1, 1, 0.1));
-                    return;
-                case "Square":  
-                    ViewModel.UpdatePlot(ProfileGenerator.Square(1, 1, 0.1));
-                    return;
-            }
+            ViewModel.CurrentProfileName = Profiles_ComboBox.SelectedItem.ToString();
+            ViewModel.UpdateProfile();     
         }
 
         public ViewModel ViewModel { get; private set; }
+
+        private void Parameter_TextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            Double amplitude;
+            Double frequency;
+            Double samplingInterval;
+            bool amplitudeOK = Double.TryParse(Amplitude_TextBox.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out amplitude);
+            bool frequencyOK = Double.TryParse(Frequency_TextBox.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out frequency);
+            bool samplingIntervalOK = Double.TryParse(SamplingInterval_TextBox.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out samplingInterval);
+ 
+            if (amplitudeOK) ViewModel.Amplitude = amplitude;
+            if (frequencyOK) ViewModel.Frequency = frequency;
+            if (samplingIntervalOK && samplingInterval > 0) ViewModel.SamplingInterval = samplingInterval;
+
+            ViewModel.UpdateProfile();
+        }
     }
 
     public class ViewModel
@@ -59,9 +68,31 @@ namespace FlowCalibration
             FlowPlotModel = new PlotModel { Title = "Flow Profile" };
 
             Points = new ObservableCollection<DataPoint>();
+
+            Amplitude = 1;
+
+            Frequency = 1;
+
+            SamplingInterval = 0.2;
         }
 
-        public void UpdatePlot(LineSeries lineSeries)
+        public void UpdateProfile()
+        {
+            switch (CurrentProfileName)
+            {
+                case "Sine":
+                    UpdatePlot(ProfileGenerator.Sine(Amplitude, Frequency, SamplingInterval));
+                    return;
+                case "Square":
+                    UpdatePlot(ProfileGenerator.Square(Amplitude, Frequency, SamplingInterval));
+                    return;
+                case "Triangle":
+                    UpdatePlot(ProfileGenerator.Triangle(Amplitude, Frequency, SamplingInterval));
+                    return;
+            }
+        }
+
+        private void UpdatePlot(LineSeries lineSeries)
         {
             FlowPlotModel.Series.Clear();
             FlowPlotModel.Series.Add(lineSeries);
@@ -83,7 +114,15 @@ namespace FlowCalibration
 
         public ObservableCollection<DataPoint> Points { get; private set; }
 
-        public ObservableCollection<string> FlowProfileNames { get; private set; }
+        public ObservableCollection<String> FlowProfileNames { get; private set; }
+
+        public String CurrentProfileName { get; set; }
+
+        public Double Amplitude { get; set; }
+
+        public Double Frequency { get; set; }
+
+        public Double SamplingInterval { get; set; }
     }
 
     public class ProfileGenerator
@@ -94,7 +133,7 @@ namespace FlowCalibration
 
             LineSeries lineSeries = new LineSeries();
             lineSeries.Title = "Sine";
-
+            if (samplingInterval == 0) return lineSeries;
             for (Double x = 0; x <= period; x += samplingInterval)
             {
                 Double y = amplitude * Math.Sin(x);
@@ -109,7 +148,7 @@ namespace FlowCalibration
             Double period = 2 * Math.PI / frequency;    //period (s)
 
             LineSeries lineSeries = new LineSeries{ Title = "Square" };
-
+            if (samplingInterval == 0) return lineSeries;
             for (Double x = 0; x <= period; x += samplingInterval)
             {
                 Double y = amplitude * Math.Sign(Math.Sin(x));
@@ -118,6 +157,7 @@ namespace FlowCalibration
 
             return lineSeries;
         }
+
         public static LineSeries Triangle(Double amplitude, Double frequency, Double samplingInterval)
         {   //amplitude (flow), frequency (rad/s)
             Double period = 2 * Math.PI / frequency;    //period (s)
@@ -125,9 +165,9 @@ namespace FlowCalibration
             LineSeries lineSeries = new LineSeries { Title = "Triangle" };
 
             Double w = period / 4;
-
-            for (int part = -1; part <= 1; part += 2;){
-                for (Double x = -w; w <= period; x += samplingInterval)
+            if (samplingInterval == 0) return lineSeries;
+            for (int part = -1; part <= 1; part += 2){
+                for (Double x = -w; x <= period; x += samplingInterval)
                 {
 
                     Double y = part * (amplitude - amplitude * Math.Abs(x) / w);
@@ -135,7 +175,7 @@ namespace FlowCalibration
                     lineSeries.Points.Add(new DataPoint(time, y));
                 }
             }
-            return lineSeries
-            }
+            return lineSeries;
+        }
     }
 }
