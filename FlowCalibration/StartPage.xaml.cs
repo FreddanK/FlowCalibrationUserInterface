@@ -24,10 +24,39 @@ namespace FlowCalibration
         {
             InitializeComponent();
         }
-
-        private void StartPageButton_Click(object sender, RoutedEventArgs e)
+        private void NavigateToControlPage(int profileIndex)
         {
-            this.NavigationService.Navigate(new ControlPage());
+            this.NavigationService.Navigate(new ControlPage(profileIndex));
+        }
+
+        private void Custom_Button_Click(object sender, RoutedEventArgs e)
+        {
+            NavigateToControlPage(5);
+        }
+
+        private void Peaks_Button_Click(object sender, RoutedEventArgs e)
+        {
+            NavigateToControlPage(4);
+        }
+
+        private void Triangle_Button_Click(object sender, RoutedEventArgs e)
+        {
+            NavigateToControlPage(2);
+        }
+
+        private void Ramp_Button_Click(object sender, RoutedEventArgs e)
+        {
+            NavigateToControlPage(3);
+        }
+
+        private void Square_Button_Click(object sender, RoutedEventArgs e)
+        {
+            NavigateToControlPage(1);
+        }
+
+        private void Sine_Button_Click(object sender, RoutedEventArgs e)
+        {
+            NavigateToControlPage(0);
         }
     }
 }

@@ -24,11 +24,15 @@ namespace FlowCalibration
     /// </summary>
     public partial class ControlPage : Page
     {
-        public ControlPage()
+        public ControlPage(int profileIndex)
         {
             InitializeComponent();
             ViewModel = new ViewModel();
-            DataContext = ViewModel;  
+            DataContext = ViewModel;
+
+            ViewModel.CurrentProfileName = ViewModel.FlowProfileNames[profileIndex];
+            Profiles_ComboBox.SelectedIndex = profileIndex;
+            ViewModel.UpdateProfile();
         }
 
         private void Profiles_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -39,7 +43,7 @@ namespace FlowCalibration
 
         public ViewModel ViewModel { get; private set; }
 
-        private void Parameter_TextBox_LostFocus(object sender, RoutedEventArgs e)
+        private void Parameter_TextBox_PreviewKeyUp(object sender, RoutedEventArgs e)
         {
             Double amplitude;
             Double frequency;

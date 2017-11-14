@@ -25,11 +25,11 @@
 
         <StackPanel Grid.Row="1" Margin="20 0">
             <TextBlock Text="Amplitude:"/>
-            <TextBox Name="Amplitude_TextBox" Text="{Binding Amplitude}" PreviewKeyUp="Parameter_TextBox_LostFocus"/>
+            <TextBox Name="Amplitude_TextBox" Text="{Binding Amplitude}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
             <TextBlock Text="Frequency:"/>
-            <TextBox Name="Frequency_TextBox" Text="{Binding Frequency}" PreviewKeyUp="Parameter_TextBox_LostFocus"/>
+            <TextBox Name="Frequency_TextBox" Text="{Binding Frequency}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
             <TextBlock  Text="Sampling Interval"/>
-            <TextBox Name="SamplingInterval_TextBox" Text="{Binding SamplingInterval}" PreviewKeyUp="Parameter_TextBox_LostFocus"/>
+            <TextBox Name="SamplingInterval_TextBox" Text="{Binding SamplingInterval}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
         </StackPanel>
         
         <ListView Grid.Row="2" Name="DataPointsListView"  Margin="20" ItemsSource="{Binding Points}">
