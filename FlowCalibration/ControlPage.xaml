@@ -10,37 +10,45 @@
       Title="Page2">
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="5*"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Text="Data Control" FontSize="16" HorizontalAlignment="Center"/>
-        <TextBlock Grid.Column="1" Text="Plot window" FontSize="16" HorizontalAlignment="Center"/>
-        <ComboBox Name="Profiles_ComboBox" SelectedValuePath="Content" Margin="20" ItemsSource="{Binding FlowProfileNames}" SelectionChanged="Profiles_ComboBox_SelectionChanged"/>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="2*"/>
+            </Grid.RowDefinitions>
+            <StackPanel>
+                <TextBlock Text="Data Control" FontSize="16" HorizontalAlignment="Center"/>
+                <ComboBox Name="Profiles_ComboBox" SelectedValuePath="Content" Margin="20" ItemsSource="{Binding FlowProfileNames}" SelectionChanged="Profiles_ComboBox_SelectionChanged"/>
+            </StackPanel>
+            
+            <StackPanel Grid.Row="1" Margin="20 0">
+                <TextBlock Text="Amplitude:"/>
+                <TextBox Name="Amplitude_TextBox" Text="{Binding Amplitude}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
+                <TextBlock Text="Frequency:"/>
+                <TextBox Name="Frequency_TextBox" Text="{Binding Frequency}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
+                <TextBlock  Text="Sampling Interval"/>
+                <TextBox Name="SamplingInterval_TextBox" Text="{Binding SamplingInterval}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
+            </StackPanel>
 
-        <StackPanel Grid.Row="1" Margin="20 0">
-            <TextBlock Text="Amplitude:"/>
-            <TextBox Name="Amplitude_TextBox" Text="{Binding Amplitude}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
-            <TextBlock Text="Frequency:"/>
-            <TextBox Name="Frequency_TextBox" Text="{Binding Frequency}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
-            <TextBlock  Text="Sampling Interval"/>
-            <TextBox Name="SamplingInterval_TextBox" Text="{Binding SamplingInterval}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
-        </StackPanel>
-        
-        <ListView Grid.Row="2" Name="DataPointsListView"  Margin="20" ItemsSource="{Binding Points}">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Time" DisplayMemberBinding="{Binding X}" Width="80"/>
-                    <GridViewColumn Header="Flow" DisplayMemberBinding="{Binding Y}" Width="80"/>
-                </GridView>
-            </ListView.View>
-        </ListView>
-
-        <oxy:PlotView Grid.Column="1" Grid.Row="1" Model="{Binding FlowPlotModel}"/>
+            <ListView Grid.Row="2" Name="DataPointsListView"  Margin="20" ItemsSource="{Binding Points}">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Time" DisplayMemberBinding="{Binding X}" Width="80"/>
+                        <GridViewColumn Header="Flow" DisplayMemberBinding="{Binding Y}" Width="80"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <oxy:PlotView Model="{Binding FlowPlotModel}"/>
+        </Grid>
     </Grid>
 </Page>
