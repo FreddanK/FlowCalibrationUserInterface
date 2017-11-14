@@ -18,16 +18,16 @@ namespace FlowCalibration
     /// <summary>
     /// Interaction logic for Page1.xaml
     /// </summary>
-    public partial class Page1 : Page
+    public partial class StartPage : Page
     {
-        public Page1()
+        public StartPage()
         {
             InitializeComponent();
         }
 
         private void StartPageButton_Click(object sender, RoutedEventArgs e)
         {
-            this.NavigationService.Navigate(new Page2());
+            this.NavigationService.Navigate(new ControlPage());
         }
     }
 }

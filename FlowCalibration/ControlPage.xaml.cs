@@ -14,44 +14,76 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using OxyPlot;
 using OxyPlot.Series;
+using System.Collections.ObjectModel;
 
 namespace FlowCalibration
 {
     /// <summary>
     /// Interaction logic for Page2.xaml
     /// </summary>
-    public partial class Page2 : Page
+    public partial class ControlPage : Page
     {
-        public Page2()
+        public ControlPage()
         {
             InitializeComponent();
-            this.DataContext = this;
-
-            this.PlotTitle = "Flow Profile";
-
-            this.FlowProfilePlot = new PlotModel { Title = this.PlotTitle };
-            LineSeries lineSeries = ProfileGenerator.Square(1, 1, 0.1);
-            this.FlowProfilePlot.Series.Add(lineSeries);
-            this.FlowProfilePlot.Series.Add(ProfileGenerator.Sine(1,1,0.5));
-
-            this.Points = lineSeries.Points;
-
-
-
-
-            //DataPointsListView.ItemsSource = this.Points;
+            ViewModel = new ViewModel();
+            DataContext = ViewModel;  
         }
 
-        private void BackToStartPageButton_Click(object sender, RoutedEventArgs e)
+        private void Profiles_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            this.NavigationService.Navigate(new Page1());
+            String SelectedProfileName = Profiles_ComboBox.SelectedItem.ToString();
+            switch (SelectedProfileName)
+            {
+                case "Sine":
+                    ViewModel.UpdatePlot(ProfileGenerator.Sine(1, 1, 0.1));
+                    return;
+                case "Square":  
+                    ViewModel.UpdatePlot(ProfileGenerator.Square(1, 1, 0.1));
+                    return;
+            }
         }
 
-        public string PlotTitle { get; private set; }
+        public ViewModel ViewModel { get; private set; }
+    }
 
-        public PlotModel FlowProfilePlot { get; private set; }
+    public class ViewModel
+    {
+        public ViewModel()
+        {
+            FlowProfileNames = new ObservableCollection<string>
+            {
+                "Sine", "Square", "Triangle", "Ramp", "Breathing", "Custom"
+            };
 
-        public IList<DataPoint> Points { get; private set; }
+            FlowPlotModel = new PlotModel { Title = "Flow Profile" };
+
+            Points = new ObservableCollection<DataPoint>();
+        }
+
+        public void UpdatePlot(LineSeries lineSeries)
+        {
+            FlowPlotModel.Series.Clear();
+            FlowPlotModel.Series.Add(lineSeries);
+            FlowPlotModel.InvalidatePlot(true);
+            UpdateObservableCollectionFromIList(Points, lineSeries.Points);
+
+        }
+
+        private void UpdateObservableCollectionFromIList(ObservableCollection<DataPoint> observablePoints, IList<DataPoint> pointList)
+        {
+            observablePoints.Clear();
+            foreach(DataPoint point in pointList)
+            {
+                observablePoints.Add(point);
+            }
+        }
+
+        public PlotModel FlowPlotModel { get; private set; }
+
+        public ObservableCollection<DataPoint> Points { get; private set; }
+
+        public ObservableCollection<string> FlowProfileNames { get; private set; }
     }
 
     public class ProfileGenerator

@@ -9,6 +9,7 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top" Height="20">
             <MenuItem Header="File">
+                <MenuItem x:Name="StartPage_MenuItem" Header="Go to start" Click="StartPage_MenuItem_Click"/>
                 <MenuItem x:Name="Exit_MenuItem" Header="Exit" Click="Exit_MenuItem_Click"/>
             </MenuItem>
                 
