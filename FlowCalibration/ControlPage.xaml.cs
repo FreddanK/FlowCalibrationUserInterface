@@ -139,7 +139,7 @@ namespace FlowCalibration
             if (samplingInterval == 0) return lineSeries;
             for (Double x = 0; x <= period; x += samplingInterval)
             {
-                Double y = amplitude * Math.Sin(x);
+                Double y = amplitude * Math.Sin(x*2*Math.PI/period);
                 lineSeries.Points.Add(new DataPoint(x, y));
             }
 
@@ -154,7 +154,7 @@ namespace FlowCalibration
             if (samplingInterval == 0) return lineSeries;
             for (Double x = 0; x <= period; x += samplingInterval)
             {
-                Double y = amplitude * Math.Sign(Math.Sin(x));
+                Double y = amplitude * Math.Sign(Math.Sin(x*2 * Math.PI / period));
                 lineSeries.Points.Add(new DataPoint(x, y));
             }
 
@@ -167,7 +167,7 @@ namespace FlowCalibration
             Double period = 2 * Math.PI / frequency;    //period (s)
 
             LineSeries lineSeries = new LineSeries { Title = "Triangle" };
-
+            if (samplingInterval == 0) return lineSeries;
             for (double x = 0; x <= period; x+= samplingInterval){
                 double y = (2 * amplitude / Math.PI) * Math.Asin(Math.Sin((2 * Math.PI * x) / period));
                 lineSeries.Points.Add(new DataPoint(x, y));
@@ -183,7 +183,7 @@ namespace FlowCalibration
 
             LineSeries lineSeries = new LineSeries { Title = "Peaks" };
             double t1 = period / 4;
-
+            if (samplingInterval == 0) return lineSeries;
             for (double x = 0; x <= period; x += samplingInterval)
             {
                 if (x <= t1)
