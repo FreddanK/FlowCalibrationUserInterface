@@ -18,12 +18,12 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Button Content="Sine" Click="StartPageButton_Click"/>
-        <Button Grid.Column="1" Content="Square" Click="StartPageButton_Click"/>
-        <Button Grid.Column="2" Content="Ramp" Click="StartPageButton_Click"/>
-        <Button Grid.Row="1" Content="Triangle" Click="StartPageButton_Click"/>
-        <Button Grid.Row="1" Grid.Column="1" Content="Inhale-Exhale" Click="StartPageButton_Click"/>
-        <Button Grid.Row="1" Grid.Column="2" Content="Custom" Click="StartPageButton_Click"/>
+        <Button Content="Sine" Name="Sine_Button" Click="Sine_Button_Click"/>
+        <Button Grid.Column="1" Name="Square_Button" Content="Square" Click="Square_Button_Click"/>
+        <Button Grid.Column="2" Name="Ramp_Button" Content="Ramp" Click="Ramp_Button_Click"/>
+        <Button Grid.Row="1" Name="Triangle_Button" Content="Triangle" Click="Triangle_Button_Click"/>
+        <Button Grid.Row="1" Grid.Column="1" Name="Peaks_Button" Content="Inhale-Exhale" Click="Peaks_Button_Click"/>
+        <Button Grid.Row="1" Grid.Column="2" Name="Custom_Button" Content="Custom" Click="Custom_Button_Click"/>
         
     </Grid>
 </Page>
