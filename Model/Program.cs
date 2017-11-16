@@ -4,6 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+// Change: Read from register
+// Change: Write to register
+// Change: How to do when multiple registers
+// Note: Delete all Set...
+// Note: Keep SetMode?
+
+
 namespace Model
 {
     class Program
@@ -45,6 +52,13 @@ namespace Model
             public const int PositionRamp = 21;
             public const int SpeedRamp = 33;
             public const int Shutdown = 4;
+        }
+
+        //Data from Frontend to Backend
+        public class FlowTimeReq
+        {
+            public List<double> time = new List<double>(); // [s]
+            public List<double> flow = new List<double>(); // [ml/s]
         }
 
         public class Backend
@@ -249,6 +263,18 @@ namespace Model
                 return motorAccereration;
             }
 
+            static FlowTimeReq FlowListToMotorSpeed(FlowTimeReq FlowTimeRequested)
+            {
+                // Converting flow (ml/s) to motor speed data
+                // Inputs:
+                // flow (ml/s)
+                for (int i = 1; i <= FlowTimeRequested.time.Count; i++)
+                {
+                    FlowTimeRequested.flow[i-1] = FlowToMotorSpeed(FlowTimeRequested.flow[i-1]);
+                }
+                return FlowTimeRequested;
+            }
+
             static void WriteToRegister(int registerindex, double data)
             {
                 // Writes data [data] in register [registerindex]
@@ -348,6 +374,22 @@ namespace Model
                 SetMode(Register.Shutdown);
                 SetMode(34534534);
 
+                FlowTimeReq r = new FlowTimeReq();
+
+                r.time.Add(0.1);
+                r.time.Add(0.2);
+                r.time.Add(0.3);
+                r.time.Add(0.4);
+
+                r.flow.Add(1);
+                r.flow.Add(3);
+                r.flow.Add(2);
+                r.flow.Add(4);
+
+                r = FlowListToMotorSpeed(r);
+
+
+                Console.WriteLine("time: {0} {1} {2} {3}, Speed: {4} {5} {6} {7}", r.time[0], r.time[1], r.time[2], r.time[3], r.flow[0], r.flow[1], r.flow[2], r.flow[3]);
 
                 Console.Title = Console.ReadLine();
             }
