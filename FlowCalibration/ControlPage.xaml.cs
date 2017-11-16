@@ -24,10 +24,11 @@ namespace FlowCalibration
     /// </summary>
     public partial class ControlPage : Page
     {
+        ControlPageViewModel ViewModel { get; set; }
         public ControlPage(int profileIndex)
         {
             InitializeComponent();
-            ViewModel = new ViewModel();
+            ViewModel = new ControlPageViewModel();
             DataContext = ViewModel;
 
             ViewModel.CurrentProfileName = ViewModel.FlowProfileNames[profileIndex];
@@ -41,7 +42,6 @@ namespace FlowCalibration
             ViewModel.UpdateProfile();     
         }
 
-        public ViewModel ViewModel { get; private set; }
 
         private void Parameter_TextBox_PreviewKeyUp(object sender, RoutedEventArgs e)
         {
@@ -67,167 +67,6 @@ namespace FlowCalibration
         private void Run_Button_Click(object sender, RoutedEventArgs e)
         {
 
-        }
-    }
-
-    public class ViewModel
-    {
-        public ViewModel()
-        {
-            FlowProfileNames = new ObservableCollection<string>
-            {
-                "Sine", "Square", "Triangle", "Ramp", "Peaks", "Custom"
-            };
-
-            FlowPlotModel = new PlotModel { Title = "Flow Profile" };
-            LoggerPlotModel = new PlotModel { Title = "Logged values" };
-
-            LoggerPlotModel.Series.Add(new FunctionSeries(Math.Cosh, 0, 3, 0.1, "Flow (ml/s)"));
-            LoggerPlotModel.Series.Add(new FunctionSeries(Math.Sinh, 0, 3, 0.1, "Volume (ml)"));
-
-            Points = new ObservableCollection<DataPoint>();
-
-            Amplitude = 1;
-
-            Frequency = 1;
-
-            SamplingInterval = 0.2;
-        }
-
-        public void UpdateProfile()
-        {
-            switch (CurrentProfileName)
-            {
-                case "Sine":
-                    UpdatePlot(ProfileGenerator.Sine(Amplitude, Frequency, SamplingInterval));
-                    return;
-                case "Square":
-                    UpdatePlot(ProfileGenerator.Square(Amplitude, Frequency, SamplingInterval));
-                    return;
-                case "Triangle":
-                    UpdatePlot(ProfileGenerator.Triangle(Amplitude, Frequency, SamplingInterval));
-                    return;
-                case "Peaks":
-                    UpdatePlot(ProfileGenerator.Peaks(Amplitude, Frequency, SamplingInterval));
-                    return;
-            }
-        }
-
-        private void UpdatePlot(LineSeries lineSeries)
-        {
-            FlowPlotModel.Series.Clear();
-            FlowPlotModel.Series.Add(lineSeries);
-            FlowPlotModel.InvalidatePlot(true);
-            UpdateObservableCollectionFromIList(Points, lineSeries.Points);
-
-        }
-
-        private void UpdateObservableCollectionFromIList(ObservableCollection<DataPoint> observablePoints, IList<DataPoint> pointList)
-        {
-            observablePoints.Clear();
-            foreach(DataPoint point in pointList)
-            {
-                observablePoints.Add(point);
-            }
-        }
-
-        public PlotModel FlowPlotModel { get; private set; }
-
-        public PlotModel LoggerPlotModel { get; private set; }
-
-        public ObservableCollection<DataPoint> Points { get; private set; }
-
-        public ObservableCollection<String> FlowProfileNames { get; private set; }
-
-        public String CurrentProfileName { get; set; }
-
-        public Double Amplitude { get; set; }
-
-        public Double Frequency { get; set; }
-
-        public Double SamplingInterval { get; set; }
-    }
-
-    public class ProfileGenerator
-    {
-        public static LineSeries Sine(Double amplitude, Double frequency, Double samplingInterval)
-        { //amplitude (flow), frequency (rad/s)
-            Double period = 2 * Math.PI / frequency;    //period (s)
-
-            LineSeries lineSeries = new LineSeries();
-            lineSeries.Title = "Sine";
-            if (samplingInterval == 0) return lineSeries;
-            for (Double x = 0; x <= period; x += samplingInterval)
-            {
-                Double y = amplitude * Math.Sin(x*2*Math.PI/period);
-                lineSeries.Points.Add(new DataPoint(x, y));
-            }
-
-            return lineSeries;
-        }
-
-        public static LineSeries Square(Double amplitude, Double frequency, Double samplingInterval)
-        { //amplitude (flow), frequency (rad/s)
-            Double period = 2 * Math.PI / frequency;    //period (s)
-
-            LineSeries lineSeries = new LineSeries{ Title = "Square" };
-            if (samplingInterval == 0) return lineSeries;
-            for (Double x = 0; x <= period; x += samplingInterval)
-            {
-                Double y = amplitude * Math.Sign(Math.Sin(x*2 * Math.PI / period));
-                lineSeries.Points.Add(new DataPoint(x, y));
-            }
-
-            return lineSeries;
-        }
-
-        public static LineSeries Triangle(Double amplitude, Double frequency, Double samplingInterval)
-        {   //amplitude (flow), frequency (rad/s)
-            // https://en.wikipedia.org/wiki/Waveform
-            Double period = 2 * Math.PI / frequency;    //period (s)
-
-            LineSeries lineSeries = new LineSeries { Title = "Triangle" };
-            if (samplingInterval == 0) return lineSeries;
-            for (double x = 0; x <= period; x+= samplingInterval){
-                double y = (2 * amplitude / Math.PI) * Math.Asin(Math.Sin((2 * Math.PI * x) / period));
-                lineSeries.Points.Add(new DataPoint(x, y));
-
-            }
-            return lineSeries;
-        }
-
-        public static LineSeries Peaks(Double amplitude, Double frequency, Double samplingInterval)
-        {   //amplitude (flow), frequency (rad/s)
-            
-            Double period = 2 * Math.PI / frequency;    //period (s)
-
-            LineSeries lineSeries = new LineSeries { Title = "Peaks" };
-            double t1 = period / 4;
-            if (samplingInterval == 0) return lineSeries;
-            for (double x = 0; x <= period; x += samplingInterval)
-            {
-                if (x <= t1)
-                {
-                    double y = (2 * amplitude / Math.PI) * Math.Asin(Math.Sin((2 * Math.PI * x) / (period/2)));
-                    lineSeries.Points.Add(new DataPoint(x, y));
-                }
-                else if (x > t1 && x <= t1*2)
-                {
-                    double y = 0;
-                    lineSeries.Points.Add(new DataPoint(x, y));
-                }
-                else if (x > t1*2 && x <= t1 * 3)
-                {
-                    double y = -(2 * amplitude / Math.PI) * Math.Asin(Math.Sin((2 * Math.PI * x) / (period / 2)));
-                    lineSeries.Points.Add(new DataPoint(x, y));
-                }
-                else if (x > t1*3)
-                {
-                    double y = 0;
-                    lineSeries.Points.Add(new DataPoint(x, y));
-                }
-            }
-            return lineSeries;
         }
     }
 }
