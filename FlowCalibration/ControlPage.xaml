@@ -5,8 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:FlowCalibration"
       xmlns:oxy="http://oxyplot.org/wpf"
-      mc:Ignorable="d" 
-      d:DesignHeight="300"
+      mc:Ignorable="d"
       Title="Page2">
 
     <Grid>
@@ -24,14 +23,16 @@
                 <TextBlock Text="Data Control" FontSize="16" HorizontalAlignment="Center"/>
                 <ComboBox Name="Profiles_ComboBox" SelectedValuePath="Content" Margin="20" ItemsSource="{Binding FlowProfileNames}" SelectionChanged="Profiles_ComboBox_SelectionChanged"/>
             </StackPanel>
-            
+
             <StackPanel Grid.Row="1" Margin="20 0">
-                <TextBlock Text="Amplitude:"/>
+                <TextBlock Text="Amplitude (ml/s):"/>
                 <TextBox Name="Amplitude_TextBox" Text="{Binding Amplitude}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
-                <TextBlock Text="Frequency:"/>
+                <TextBlock Text="Frequency (rad/s):"/>
                 <TextBox Name="Frequency_TextBox" Text="{Binding Frequency}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
-                <TextBlock  Text="Sampling Interval"/>
+                <TextBlock  Text="Sampling Interval (s):"/>
                 <TextBox Name="SamplingInterval_TextBox" Text="{Binding SamplingInterval}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
+                <TextBlock  Text="Repeat (times):"/>
+                <TextBox Name="Repeat_TextBox" Text="1" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
             </StackPanel>
 
             <ListView Grid.Row="2" Name="DataPointsListView"  Margin="20" ItemsSource="{Binding Points}">
@@ -45,10 +46,30 @@
         </Grid>
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="2*"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="8*"/>
+                <RowDefinition Height="3*"/>
             </Grid.RowDefinitions>
-            <oxy:PlotView Model="{Binding FlowPlotModel}"/>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Name="LoadProfile_Button" Content="Load Profile" Margin="0,20,10,0"/>
+                <Button Name="SaveProfile_Button" Content="Save Profile" Margin="0,20,10,0"/>
+            </StackPanel>
+
+            <oxy:PlotView Grid.Row="1" Grid.ColumnSpan="2" Model="{Binding FlowPlotModel}"/>
+
+            <StackPanel Grid.Row="2">
+                <TextBlock Text="COM port" Margin="20,0"/>
+                <ComboBox Name="COMPort_Combobox" SelectedValuePath="Content" Margin="20,0"/>
+                <TextBlock Text="Baud Rate" Margin="20,0"/>
+                <ComboBox Name="BaudRates_ComboBox" SelectedValuePath="Content" Margin="20,0" ItemsSource="{Binding FlowProfileNames}" SelectionChanged="BaudRates_ComboBox_SelectionChanged"/>
+            </StackPanel>
+
+            <Button Name="Run_Button" Grid.Row="2" Grid.Column="1" Content="Run" Margin="20" Click="Run_Button_Click"/>
+
         </Grid>
     </Grid>
 </Page>

@@ -53,10 +53,20 @@ namespace FlowCalibration
             bool samplingIntervalOK = Double.TryParse(SamplingInterval_TextBox.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out samplingInterval);
  
             if (amplitudeOK) ViewModel.Amplitude = amplitude;
-            if (frequencyOK) ViewModel.Frequency = frequency;
+            if (frequencyOK && frequency > 0) ViewModel.Frequency = frequency;
             if (samplingIntervalOK && samplingInterval > 0) ViewModel.SamplingInterval = samplingInterval;
 
             ViewModel.UpdateProfile();
+        }
+
+        private void BaudRates_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void Run_Button_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 
