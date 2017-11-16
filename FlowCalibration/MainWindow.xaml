@@ -5,15 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FlowCalibration"
         mc:Ignorable="d"
-        Title="MainWindow" Height="550" Width="800" Background="White" Visibility="Visible">
+        Title="MainWindow" Height="550" Width="800" Background="#035e7b" Visibility="Visible" WindowStyle="SingleBorderWindow">
     <DockPanel>
-        <!--<Menu DockPanel.Dock="Top" Height="20">
-            <MenuItem Header="File">
-                <MenuItem x:Name="StartPage_MenuItem" Header="Go to start" Click="StartPage_MenuItem_Click"/>
-                <MenuItem x:Name="Exit_MenuItem" Header="Exit" Click="Exit_MenuItem_Click"/>
-            </MenuItem>
-                
-        </Menu>-->
         <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
     </DockPanel>
 </Window>
