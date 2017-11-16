@@ -80,6 +80,10 @@ namespace FlowCalibration
             };
 
             FlowPlotModel = new PlotModel { Title = "Flow Profile" };
+            LoggerPlotModel = new PlotModel { Title = "Logged values" };
+
+            LoggerPlotModel.Series.Add(new FunctionSeries(Math.Cosh, 0, 3, 0.1, "Flow (ml/s)"));
+            LoggerPlotModel.Series.Add(new FunctionSeries(Math.Sinh, 0, 3, 0.1, "Volume (ml)"));
 
             Points = new ObservableCollection<DataPoint>();
 
@@ -128,6 +132,8 @@ namespace FlowCalibration
         }
 
         public PlotModel FlowPlotModel { get; private set; }
+
+        public PlotModel LoggerPlotModel { get; private set; }
 
         public ObservableCollection<DataPoint> Points { get; private set; }
 

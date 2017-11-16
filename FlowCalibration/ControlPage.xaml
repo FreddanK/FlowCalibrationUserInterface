@@ -8,68 +8,98 @@
       mc:Ignorable="d"
       Title="Page2">
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="2*"/>
-        </Grid.ColumnDefinitions>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="2*"/>
-                <RowDefinition Height="2*"/>
-            </Grid.RowDefinitions>
-            <StackPanel>
-                <TextBlock Text="Data Control" FontSize="16" HorizontalAlignment="Center"/>
-                <ComboBox Name="Profiles_ComboBox" SelectedValuePath="Content" Margin="20" ItemsSource="{Binding FlowProfileNames}" SelectionChanged="Profiles_ComboBox_SelectionChanged"/>
-            </StackPanel>
+    <TabControl>
+        <TabItem Header="Control">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="2*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="Data Control" FontSize="16" HorizontalAlignment="Center"/>
+                        <ComboBox Name="Profiles_ComboBox" SelectedValuePath="Content" Margin="20" ItemsSource="{Binding FlowProfileNames}" SelectionChanged="Profiles_ComboBox_SelectionChanged"/>
+                    </StackPanel>
 
-            <StackPanel Grid.Row="1" Margin="20 0">
-                <TextBlock Text="Amplitude (ml/s):"/>
-                <TextBox Name="Amplitude_TextBox" Text="{Binding Amplitude}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
-                <TextBlock Text="Frequency (rad/s):"/>
-                <TextBox Name="Frequency_TextBox" Text="{Binding Frequency}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
-                <TextBlock  Text="Sampling Interval (s):"/>
-                <TextBox Name="SamplingInterval_TextBox" Text="{Binding SamplingInterval}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
-                <TextBlock  Text="Repeat (times):"/>
-                <TextBox Name="Repeat_TextBox" Text="1" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
-            </StackPanel>
+                    <StackPanel Grid.Row="1" Margin="20 0">
+                        <TextBlock Text="Amplitude (ml/s):"/>
+                        <TextBox Name="Amplitude_TextBox" Text="{Binding Amplitude}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
+                        <TextBlock Text="Frequency (rad/s):"/>
+                        <TextBox Name="Frequency_TextBox" Text="{Binding Frequency}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
+                        <TextBlock  Text="Sampling Interval (s):"/>
+                        <TextBox Name="SamplingInterval_TextBox" Text="{Binding SamplingInterval}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
+                        <TextBlock  Text="Repeat (times):"/>
+                        <TextBox Name="Repeat_TextBox" Text="1" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
+                    </StackPanel>
 
-            <ListView Grid.Row="2" Name="DataPointsListView"  Margin="20" ItemsSource="{Binding Points}">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Time" DisplayMemberBinding="{Binding X}" Width="80"/>
-                        <GridViewColumn Header="Flow" DisplayMemberBinding="{Binding Y}" Width="80"/>
-                    </GridView>
-                </ListView.View>
-            </ListView>
-        </Grid>
-        <Grid Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="8*"/>
-                <RowDefinition Height="3*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Name="LoadProfile_Button" Content="Load Profile" Margin="0,20,10,0"/>
-                <Button Name="SaveProfile_Button" Content="Save Profile" Margin="0,20,10,0"/>
-            </StackPanel>
+                    <ListView Grid.Row="2" Name="DataPointsListView"  Margin="20" ItemsSource="{Binding Points}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Time" DisplayMemberBinding="{Binding X}" Width="80"/>
+                                <GridViewColumn Header="Flow" DisplayMemberBinding="{Binding Y}" Width="80"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="8*"/>
+                        <RowDefinition Height="3*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Name="LoadProfile_Button" Content="Load Profile" Margin="0,20,10,0"/>
+                        <Button Name="SaveProfile_Button" Content="Save Profile" Margin="0,20,10,0"/>
+                    </StackPanel>
 
-            <oxy:PlotView Grid.Row="1" Grid.ColumnSpan="2" Model="{Binding FlowPlotModel}"/>
+                    <oxy:PlotView Grid.Row="1" Grid.ColumnSpan="2" Model="{Binding FlowPlotModel}"/>
 
-            <StackPanel Grid.Row="2">
-                <TextBlock Text="COM port" Margin="20,0"/>
-                <ComboBox Name="COMPort_Combobox" SelectedValuePath="Content" Margin="20,0"/>
-                <TextBlock Text="Baud Rate" Margin="20,0"/>
-                <ComboBox Name="BaudRates_ComboBox" SelectedValuePath="Content" Margin="20,0" ItemsSource="{Binding FlowProfileNames}" SelectionChanged="BaudRates_ComboBox_SelectionChanged"/>
-            </StackPanel>
+                    <StackPanel Grid.Row="2">
+                        <TextBlock Text="COM port" Margin="20,0"/>
+                        <ComboBox Name="COMPort_Combobox" SelectedValuePath="Content" Margin="20,0"/>
+                        <TextBlock Text="Baud Rate" Margin="20,0"/>
+                        <ComboBox Name="BaudRates_ComboBox" SelectedValuePath="Content" Margin="20,0" ItemsSource="{Binding FlowProfileNames}" SelectionChanged="BaudRates_ComboBox_SelectionChanged"/>
+                        <TextBlock Text="USB not connected" Margin="20,5"/>
+                    </StackPanel>
 
-            <Button Name="Run_Button" Grid.Row="2" Grid.Column="1" Content="Run" Margin="20" Click="Run_Button_Click"/>
+                    <Button Name="Run_Button" Grid.Row="2" Grid.Column="1" Content="Run" Margin="20" Click="Run_Button_Click"/>
 
-        </Grid>
-    </Grid>
+                </Grid>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Logger">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Margin="20">
+                    <TextBlock Text="Statistics:" FontSize="16"/>
+                    <GroupBox>
+                        <StackPanel>
+                            <TextBlock Text="Date: 2016-11-16 09:10:13" Margin="10"/>
+                            <TextBlock Text="Flow Profile: Custom" Margin="10"/>
+                            <TextBlock Text="Running time: 3 (s)" Margin="10"/>
+                            <TextBlock Text="Maximum flow: 10 (ml/s)" Margin="10"/>
+                            <TextBlock Text="Minimum flow: (ml/s)" Margin="10"/>
+                            <TextBlock Text="Maximum volume: 10 (ml)" Margin="10"/>
+                            <TextBlock Text="Minimum volume: 0 (ml)" Margin="10"/>
+                        </StackPanel>
+                    </GroupBox>
+                    <Button Content="Export Results" Margin="0,10,10,0"/>
+                </StackPanel>
+
+                <oxy:PlotView Grid.Column="1" Model="{Binding LoggerPlotModel}"/>
+            </Grid>
+        </TabItem>
+    </TabControl>
 </Page>
