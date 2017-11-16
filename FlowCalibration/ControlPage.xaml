@@ -9,11 +9,16 @@
       Title="Page2">
     <Page.Resources>
         <!-- Color goes from darker to brighter, so color1 is darkest-->
-        <Color x:Key="color1">#101710</Color>
+        <!--<Color x:Key="color1">#101710</Color>
         <Color x:Key="color2">#17231f</Color>
         <Color x:Key="color3">#035e7b</Color>
         <Color x:Key="color4">#e3e7af</Color>
-        <Color x:Key="color5">#eff1c5</Color>
+        <Color x:Key="color5">#eff1c5</Color>-->
+        <Color x:Key="color1">White</Color>
+        <Color x:Key="color2">White</Color>
+        <Color x:Key="color3">#035e7b</Color>
+        <Color x:Key="color4">LightGray</Color>
+        <Color x:Key="color5">Black</Color>
 
         <SolidColorBrush x:Key="color1Brush" Color="{StaticResource color1}"/>
         <SolidColorBrush x:Key="color2Brush" Color="{StaticResource color2}"/>
@@ -23,11 +28,18 @@
 
         <Style x:Key="bigButton" TargetType="Button">
             <Setter Property="Background" Value="{StaticResource color3Brush}"/>
-            <Setter Property="Foreground" Value="{StaticResource color5Brush}"/>
+            <Setter Property="Foreground" Value="{StaticResource color1Brush}"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource color3Brush}"/>
+                    <Setter Property="Foreground" Value="black"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
         <Style x:Key="smallButton" TargetType="Button">
             <Setter Property="Background" Value="{StaticResource color4Brush}"/>
-            <Setter Property="Foreground" Value="{StaticResource color1Brush}"/>
+            <Setter Property="Foreground" Value="{StaticResource color5Brush}"/>
         </Style>
         <Style x:Key="tabItem" TargetType="TabItem">
             <Setter Property="Background" Value="{StaticResource color1Brush}"/>
@@ -110,7 +122,7 @@
 
                     <oxy:PlotView Grid.Row="1" Grid.ColumnSpan="2" Model="{Binding FlowPlotModel}" Style="{StaticResource plotStyle}">
 
-                    </oxy:PlotView>
+                    </oxy:PlotView> 
 
                     <StackPanel Grid.Row="2">
                         <TextBlock Text="COM port" Style="{StaticResource smallText}" Margin="20,0"/>
