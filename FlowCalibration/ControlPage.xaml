@@ -7,9 +7,68 @@
       xmlns:oxy="http://oxyplot.org/wpf"
       mc:Ignorable="d"
       Title="Page2">
+    <Page.Resources>
+        <!-- Color goes from darker to brighter, so color1 is darkest-->
+        <!--<Color x:Key="color1">#101710</Color>
+        <Color x:Key="color2">#17231f</Color>
+        <Color x:Key="color3">#035e7b</Color>
+        <Color x:Key="color4">#e3e7af</Color>
+        <Color x:Key="color5">#eff1c5</Color>-->
+        <Color x:Key="color1">White</Color>
+        <Color x:Key="color2">White</Color>
+        <Color x:Key="color3">#035e7b</Color>
+        <Color x:Key="color4">LightGray</Color>
+        <Color x:Key="color5">Black</Color>
 
-    <TabControl>
-        <TabItem Header="Control">
+        <SolidColorBrush x:Key="color1Brush" Color="{StaticResource color1}"/>
+        <SolidColorBrush x:Key="color2Brush" Color="{StaticResource color2}"/>
+        <SolidColorBrush x:Key="color3Brush" Color="{StaticResource color3}"/>
+        <SolidColorBrush x:Key="color4Brush" Color="{StaticResource color4}"/>
+        <SolidColorBrush x:Key="color5Brush" Color="{StaticResource color5}"/>
+
+        <Style x:Key="bigButton" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource color3Brush}"/>
+            <Setter Property="Foreground" Value="{StaticResource color1Brush}"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource color3Brush}"/>
+                    <Setter Property="Foreground" Value="black"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="smallButton" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource color4Brush}"/>
+            <Setter Property="Foreground" Value="{StaticResource color5Brush}"/>
+        </Style>
+        <Style x:Key="tabItem" TargetType="TabItem">
+            <Setter Property="Background" Value="{StaticResource color1Brush}"/>
+            <Setter Property="Foreground" Value="{StaticResource color5Brush}"/>
+        </Style>
+        <Style x:Key="smallText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource color5Brush}"/>
+        </Style>
+        <Style x:Key="largeText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource color5Brush}"/>
+            <Setter Property="FontSize" Value="16"/>
+        </Style>
+        <Style x:Key="textBox" TargetType="TextBox">
+            <Setter Property="Background" Value="{StaticResource color2Brush}"/>
+            <Setter Property="Foreground" Value="{StaticResource color5Brush}"/>
+        </Style>
+        <Style x:Key="listView" TargetType="ListView">
+            <Setter Property="Background" Value="{StaticResource color2Brush}"/>
+            <Setter Property="Foreground" Value="{StaticResource color5Brush}"/>
+        </Style>
+        <Style x:Key="plotStyle" TargetType="oxy:PlotView">
+            <Setter Property="Background" Value="{StaticResource color1Brush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+    </Page.Resources>
+
+    <TabControl TabStripPlacement="Bottom" Background="{StaticResource color1Brush}" Foreground="{StaticResource color5Brush}">
+        <TabItem Header="Control" Style="{StaticResource tabItem}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -22,22 +81,22 @@
                         <RowDefinition Height="2*"/>
                     </Grid.RowDefinitions>
                     <StackPanel>
-                        <TextBlock Text="Data Control" FontSize="16" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Data Control" Style="{StaticResource largeText}" HorizontalAlignment="Center"/>
                         <ComboBox Name="Profiles_ComboBox" SelectedValuePath="Content" Margin="20" ItemsSource="{Binding FlowProfileNames}" SelectionChanged="Profiles_ComboBox_SelectionChanged"/>
                     </StackPanel>
 
                     <StackPanel Grid.Row="1" Margin="20 0">
-                        <TextBlock Text="Amplitude (ml/s):"/>
-                        <TextBox Name="Amplitude_TextBox" Text="{Binding Amplitude}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
-                        <TextBlock Text="Frequency (rad/s):"/>
-                        <TextBox Name="Frequency_TextBox" Text="{Binding Frequency}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
-                        <TextBlock  Text="Sampling Interval (s):"/>
-                        <TextBox Name="SamplingInterval_TextBox" Text="{Binding SamplingInterval}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
-                        <TextBlock  Text="Repeat (times):"/>
-                        <TextBox Name="Repeat_TextBox" Text="1" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
+                        <TextBlock Text="Amplitude (ml/s):" Style="{StaticResource smallText}"/>
+                        <TextBox Name="Amplitude_TextBox" Text="{Binding Amplitude}" Style="{StaticResource textBox}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
+                        <TextBlock Text="Frequency (rad/s):" Style="{StaticResource smallText}"/>
+                        <TextBox Name="Frequency_TextBox" Text="{Binding Frequency}" Style="{StaticResource textBox}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
+                        <TextBlock  Text="Sampling Interval (s):" Style="{StaticResource smallText}"/>
+                        <TextBox Name="SamplingInterval_TextBox" Text="{Binding SamplingInterval}" Style="{StaticResource textBox}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
+                        <TextBlock  Text="Repeat (times):" Style="{StaticResource smallText}"/>
+                        <TextBox Name="Repeat_TextBox" Text="1" Style="{StaticResource textBox}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
                     </StackPanel>
 
-                    <ListView Grid.Row="2" Name="DataPointsListView"  Margin="20" ItemsSource="{Binding Points}">
+                    <ListView Grid.Row="2" Name="DataPointsListView" Style="{StaticResource listView}"  Margin="20" ItemsSource="{Binding Points}">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Time" DisplayMemberBinding="{Binding X}" Width="80"/>
@@ -57,48 +116,50 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Name="LoadProfile_Button" Content="Load Profile" Margin="0,20,10,0"/>
-                        <Button Name="SaveProfile_Button" Content="Save Profile" Margin="0,20,10,0"/>
+                        <Button Name="LoadProfile_Button" Content="Load Profile" Style="{StaticResource smallButton}" Margin="0,20,10,0"/>
+                        <Button Name="SaveProfile_Button" Content="Save Profile" Style="{StaticResource smallButton}" Margin="0,20,10,0"/>
                     </StackPanel>
 
-                    <oxy:PlotView Grid.Row="1" Grid.ColumnSpan="2" Model="{Binding FlowPlotModel}"/>
+                    <oxy:PlotView Grid.Row="1" Grid.ColumnSpan="2" Model="{Binding FlowPlotModel}" Style="{StaticResource plotStyle}">
+
+                    </oxy:PlotView> 
 
                     <StackPanel Grid.Row="2">
-                        <TextBlock Text="COM port" Margin="20,0"/>
+                        <TextBlock Text="COM port" Style="{StaticResource smallText}" Margin="20,0"/>
                         <ComboBox Name="COMPort_Combobox" SelectedValuePath="Content" Margin="20,0"/>
-                        <TextBlock Text="Baud Rate" Margin="20,0"/>
+                        <TextBlock Text="Baud Rate" Style="{StaticResource smallText}" Margin="20,0"/>
                         <ComboBox Name="BaudRates_ComboBox" SelectedValuePath="Content" Margin="20,0" ItemsSource="{Binding FlowProfileNames}" SelectionChanged="BaudRates_ComboBox_SelectionChanged"/>
-                        <TextBlock Text="USB not connected" Margin="20,5"/>
+                        <TextBlock Text="USB not connected" Style="{StaticResource smallText}" Margin="20,5"/>
                     </StackPanel>
 
-                    <Button Name="Run_Button" Grid.Row="2" Grid.Column="1" Content="Run" Margin="20" Click="Run_Button_Click"/>
+                    <Button Name="Run_Button" Grid.Row="2" Grid.Column="1" Content="Run" Style="{StaticResource bigButton}" Margin="20" Click="Run_Button_Click"/>
 
                 </Grid>
             </Grid>
         </TabItem>
-        <TabItem Header="Logger">
+        <TabItem Header="Logger" Style="{StaticResource tabItem}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Margin="20">
-                    <TextBlock Text="Statistics:" FontSize="16"/>
+                    <TextBlock Text="Statistics:" Style="{StaticResource largeText}"/>
                     <GroupBox>
                         <StackPanel>
-                            <TextBlock Text="Date: 2016-11-16 09:10:13" Margin="10"/>
-                            <TextBlock Text="Flow Profile: Custom" Margin="10"/>
-                            <TextBlock Text="Running time: 3 (s)" Margin="10"/>
-                            <TextBlock Text="Maximum flow: 10 (ml/s)" Margin="10"/>
-                            <TextBlock Text="Minimum flow: (ml/s)" Margin="10"/>
-                            <TextBlock Text="Maximum volume: 10 (ml)" Margin="10"/>
-                            <TextBlock Text="Minimum volume: 0 (ml)" Margin="10"/>
+                            <TextBlock Text="Date: 2016-11-16 09:10:13" Style="{StaticResource smallText}" Margin="10"/>
+                            <TextBlock Text="Flow Profile: Custom" Style="{StaticResource smallText}" Margin="10"/>
+                            <TextBlock Text="Running time: 3 (s)" Style="{StaticResource smallText}" Margin="10"/>
+                            <TextBlock Text="Maximum flow: 10 (ml/s)" Style="{StaticResource smallText}" Margin="10"/>
+                            <TextBlock Text="Minimum flow: (ml/s)" Style="{StaticResource smallText}" Margin="10"/>
+                            <TextBlock Text="Maximum volume: 10 (ml)" Style="{StaticResource smallText}" Margin="10"/>
+                            <TextBlock Text="Minimum volume: 0 (ml)" Style="{StaticResource smallText}" Margin="10"/>
                         </StackPanel>
                     </GroupBox>
-                    <Button Content="Export Results" Margin="0,10,10,0"/>
+                    <Button Content="Export Results" Style="{StaticResource smallButton}" Margin="0,10,10,0"/>
                 </StackPanel>
 
-                <oxy:PlotView Grid.Column="1" Model="{Binding LoggerPlotModel}"/>
+                <oxy:PlotView Grid.Column="1" Model="{Binding LoggerPlotModel}" Style="{StaticResource plotStyle}"/>
             </Grid>
         </TabItem>
     </TabControl>
