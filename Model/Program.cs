@@ -348,8 +348,23 @@ namespace Model
                 SetMode(Register.Shutdown);
                 SetMode(34534534);
 
+                List<double> testlist = new List<double>();
+                testlist.Add(1);
+                testlist.Add(1);
+                testlist.Add(1);
+                testlist.Add(1);
+                int test2 = 21;
+                Console.WriteLine(test2.GetType());
 
-                Console.Title = Console.ReadLine();
+                for (int i = 0; i<= testlist.Count()-1 ; i += 1){
+                    Console.WriteLine(testlist[i]);
+                }
+
+
+
+
+
+                //Console.Title = Console.ReadLine();
             }
         }
     }
