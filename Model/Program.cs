@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
+ 
 
 // Change: Read from register
 // Change: Write to register
@@ -18,7 +20,8 @@ namespace Model
         static class Register
         {
             // DEFINE REGISTERS 
-
+            // REGISTER: 450/451 (int32)
+            public const int TargetInput = 450;
             // REGISTER: 200/201 (int32)
             public const int Position = 200;
             // REGISTER: 202 (int16)
@@ -177,6 +180,95 @@ namespace Model
                 return p;
             }
 
+            // SEND & RECEIVE DATA
+            static List<double> SendReceiveData(List<double> targetvalues, List<double> time, int writeRegister, int readRegister){
+                // Send targetvalues to register "writeRegister" at specified times.
+                // reads data from "readRegister"
+            
+
+                // abort if lists of different lengths
+                if (targetvalues.Count() != time.Count()){
+                    Console.WriteLine("SendTagetData() says: Lists not equal length");
+                    Console.ReadLine(); // dummy to stop from executing
+                }
+
+                List <double> motorData = new List<double>(); // save data from motor
+
+                Stopwatch stopWatch = new Stopwatch();
+                Console.WriteLine("time: 0s");
+                WriteToRegister(writeRegister,targetvalues[0]); //write initial target
+                motorData.Add(ReadFromRegister(readRegister));  //read initial motor data
+
+                int i = 1;
+                stopWatch.Start();
+                while (i < targetvalues.Count()){
+                    
+                    if (time[i] <= stopWatch.Elapsed.TotalSeconds){ // If more time have elapsed than time[i]
+                        Console.WriteLine("time: {0}s", stopWatch.Elapsed.TotalSeconds);
+                        WriteToRegister(writeRegister, targetvalues[i]); // write data
+                        motorData.Add(ReadFromRegister(readRegister)); // read data
+                        i += 1;
+                    }
+
+                    // in case of...
+                    double overtime = 30;
+                    if (stopWatch.Elapsed.TotalSeconds > overtime) {
+                        Console.WriteLine("SendTagetData says: something is wrong");
+                        stopWatch.Stop();
+                        break;
+                    }
+                }
+                stopWatch.Stop();
+                return motorData;
+            }
+
+            static Tuple<List<double>, List<double>> SendReceiveData(List<double> targetvalues,List<double> time, int writeRegister, int readRegister1, int readRegister2)
+            {
+                // Send targetvalues to register "writeRegister" at specified times.
+                // reads data from "readRegister"
+
+
+                // abort if lists of different lengths
+                if (targetvalues.Count() != time.Count())
+                {
+                    Console.WriteLine("SendTagetData() says: Lists not equal length");
+                    Console.ReadLine(); // dummy to stop from executing
+                }
+
+                List<double> motorData1 = new List<double>(); // save data from motor
+                List<double> motorData2 = new List<double>();
+                Stopwatch stopWatch = new Stopwatch();
+                Console.WriteLine("time: 0s");
+                WriteToRegister(writeRegister, targetvalues[0]); //write initial target
+                motorData1.Add(ReadFromRegister(readRegister1));  //read initial motor data
+                motorData2.Add(ReadFromRegister(readRegister2));
+
+                int i = 1;
+                stopWatch.Start();
+                while (i < targetvalues.Count())
+                {
+
+                    if (time[i] <= stopWatch.Elapsed.TotalSeconds)
+                    { // If more time have elapsed than time[i]
+                        Console.WriteLine("time: {0}s", stopWatch.Elapsed.TotalSeconds);
+                        WriteToRegister(writeRegister, targetvalues[i]); // write data
+                        motorData1.Add(ReadFromRegister(readRegister1)); // read data
+                        motorData2.Add(ReadFromRegister(readRegister2));
+                        i += 1;
+                    }
+
+                    // in case of...
+                    double overtime = 30;
+                    if (stopWatch.Elapsed.TotalSeconds > overtime)
+                    {
+                        Console.WriteLine("SendTagetData says: something is wrong");
+                        stopWatch.Stop();
+                        break;
+                    }
+                }
+                stopWatch.Stop();
+                return Tuple.Create(motorData1, motorData2);
+            }
             // SEND DATA
             static void SetMotorRPM(double rpm)
             {
@@ -279,7 +371,7 @@ namespace Model
             {
                 // Writes data [data] in register [registerindex]
                 //WRITE DATA TO INDEX
-                Console.WriteLine(" WtR");
+                Console.WriteLine("{0} written to register {1}",data,registerindex);
             }
 
             static void SetMode(int mode)
@@ -311,6 +403,7 @@ namespace Model
                 return acc;
             }
 
+           
             static void Main(string[] args)
             {
                 double motors = 100;
@@ -374,23 +467,6 @@ namespace Model
                 SetMode(Register.Shutdown);
                 SetMode(34534534);
 
-<<<<<<< HEAD
-                List<double> testlist = new List<double>();
-                testlist.Add(1);
-                testlist.Add(1);
-                testlist.Add(1);
-                testlist.Add(1);
-                int test2 = 21;
-                Console.WriteLine(test2.GetType());
-
-                for (int i = 0; i<= testlist.Count()-1 ; i += 1){
-                    Console.WriteLine(testlist[i]);
-                }
-
-
-
-
-=======
                 FlowTimeReq r = new FlowTimeReq();
 
                 r.time.Add(0.1);
@@ -402,12 +478,14 @@ namespace Model
                 r.flow.Add(3);
                 r.flow.Add(2);
                 r.flow.Add(4);
-
                 r = FlowListToMotorSpeed(r);
-
-
                 Console.WriteLine("time: {0} {1} {2} {3}, Speed: {4} {5} {6} {7}", r.time[0], r.time[1], r.time[2], r.time[3], r.flow[0], r.flow[1], r.flow[2], r.flow[3]);
->>>>>>> 4c420484c95ae769c6ae480d1b7e37536f28dad6
+                Console.WriteLine(r.GetType());
+
+                List<double> motorData = SendReceiveData(r.flow, r.time ,Register.TargetInput, Register.Position );
+                Console.WriteLine("firstdata = {0}, secondData = {1}",motorData[0],motorData[1]);
+
+
 
                 //Console.Title = Console.ReadLine();
             }
