@@ -1,4 +1,5 @@
 ﻿using OxyPlot;
+using Model;
 using OxyPlot.Series;
 using System;
 using System.Collections.Generic;
@@ -18,13 +19,14 @@ namespace FlowCalibration
         public ObservableCollection<DataPoint> ControlFlowPoints { get; private set; }
 
         public ObservableCollection<String> FlowProfileNames { get; private set; }
-
+        
         public String CurrentProfileName { get; set; }
 
         public Double Amplitude { get; set; }
         public Double Frequency { get; set; }
         public Double SamplingInterval { get; set; }
         public Double Repeat { get; set; }
+        public int R { get; set; }
 
         public ControlPageViewModel()
         {
@@ -48,6 +50,7 @@ namespace FlowCalibration
             Frequency = 1;
             SamplingInterval = 0.1;
             Repeat = 1;
+            R = 1;
         }
 
         public void UpdateProfile()
@@ -63,6 +66,20 @@ namespace FlowCalibration
             {
                 observablePoints.Add(point);
             }
+        }
+
+        public void RunFlowProfile()
+        {
+            List<Double> times = new List<Double>();
+            List<Double> values = new List<Double>();
+
+            foreach (DataPoint point in ControlFlowPoints)
+            {
+                times.Add(point.X);
+                values.Add(point.Y);
+            }
+
+            // Backend.RunFlowValues(times,values);
         }
     }
 }

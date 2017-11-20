@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -25,6 +25,7 @@ namespace FlowCalibration
     public partial class ControlPage : Page
     {
         ControlPageViewModel ViewModel { get; set; }
+
         public ControlPage(int profileIndex)
         {
             InitializeComponent();
@@ -53,13 +54,17 @@ namespace FlowCalibration
             bool frequencyOK = Double.TryParse(Frequency_TextBox.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out frequency);
             bool samplingIntervalOK = Double.TryParse(SamplingInterval_TextBox.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out samplingInterval);
             bool repeatOK = Double.TryParse(Repeat_TextBox.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out repeat);
- 
-            if (amplitudeOK) ViewModel.Amplitude = amplitude;
-            if (frequencyOK && frequency > 0) ViewModel.Frequency = frequency;
-            if (samplingIntervalOK && samplingInterval > 0.005) ViewModel.SamplingInterval = samplingInterval;
-            if (repeatOK && repeat <= 10)  ViewModel.Repeat = repeat;
 
-            ViewModel.UpdateProfile();
+            if (amplitudeOK && frequencyOK && samplingIntervalOK && repeatOK && frequency > 0 && samplingInterval > 0.005 && repeat <= 10)
+            {
+                ViewModel.Amplitude = amplitude;
+                ViewModel.Frequency = frequency;
+                ViewModel.SamplingInterval = samplingInterval;
+                ViewModel.Repeat = repeat;
+
+                ViewModel.UpdateProfile();
+            }
+
         }
 
         private void BaudRates_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -69,6 +74,10 @@ namespace FlowCalibration
 
         private void Run_Button_Click(object sender, RoutedEventArgs e)
         {
+            Thread runThread = new Thread(ViewModel.RunFlowProfile);
+            runThread.Name = "Run servo thread";
+            runThread.Start();
+            //ViewModel.RunFlowProfile();
 
         }
     }
