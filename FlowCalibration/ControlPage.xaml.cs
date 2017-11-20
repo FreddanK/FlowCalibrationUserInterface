@@ -48,13 +48,16 @@ namespace FlowCalibration
             Double amplitude;
             Double frequency;
             Double samplingInterval;
+            Double repeat;
             bool amplitudeOK = Double.TryParse(Amplitude_TextBox.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out amplitude);
             bool frequencyOK = Double.TryParse(Frequency_TextBox.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out frequency);
             bool samplingIntervalOK = Double.TryParse(SamplingInterval_TextBox.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out samplingInterval);
+            bool repeatOK = Double.TryParse(Repeat_TextBox.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out repeat);
  
             if (amplitudeOK) ViewModel.Amplitude = amplitude;
             if (frequencyOK && frequency > 0) ViewModel.Frequency = frequency;
-            if (samplingIntervalOK && samplingInterval > 0) ViewModel.SamplingInterval = samplingInterval;
+            if (samplingIntervalOK && samplingInterval > 0.005) ViewModel.SamplingInterval = samplingInterval;
+            if (repeatOK && repeat <= 10)  ViewModel.Repeat = repeat;
 
             ViewModel.UpdateProfile();
         }

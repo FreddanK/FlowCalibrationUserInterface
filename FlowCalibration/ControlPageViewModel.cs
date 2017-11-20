@@ -11,6 +11,21 @@ namespace FlowCalibration
 {
     class ControlPageViewModel
     {
+        public ObservableCollection<DataPoint> LogFlowPoints { get; private set; }
+
+        public ObservableCollection<DataPoint> LogVolumePoints { get; private set; }
+
+        public ObservableCollection<DataPoint> ControlFlowPoints { get; private set; }
+
+        public ObservableCollection<String> FlowProfileNames { get; private set; }
+
+        public String CurrentProfileName { get; set; }
+
+        public Double Amplitude { get; set; }
+        public Double Frequency { get; set; }
+        public Double SamplingInterval { get; set; }
+        public Double Repeat { get; set; }
+
         public ControlPageViewModel()
         {
             FlowProfileNames = new ObservableCollection<string>
@@ -18,49 +33,27 @@ namespace FlowCalibration
                 "Sine", "Square", "Triangle", "Ramp", "Peaks", "Custom"
             };
 
-            FlowPlotModel = new PlotModel { Title = "Flow Profile" };
-            LoggerPlotModel = new PlotModel { Title = "Logged values" };
 
+            FunctionSeries points1 = new FunctionSeries(Math.Cosh, 0, 3, 0.1, "Flow (ml/s)");
+            FunctionSeries points2 = new FunctionSeries(Math.Sinh, 0, 3, 0.1, "Volume (ml)");
 
-            LoggerPlotModel.Series.Add(new FunctionSeries(Math.Cosh, 0, 3, 0.1, "Flow (ml/s)"));
-            LoggerPlotModel.Series.Add(new FunctionSeries(Math.Sinh, 0, 3, 0.1, "Volume (ml)"));
+            ControlFlowPoints = new ObservableCollection<DataPoint>();
+            LogFlowPoints = new ObservableCollection<DataPoint>();
+            LogVolumePoints = new ObservableCollection<DataPoint>();
 
-
-            Points = new ObservableCollection<DataPoint>();
+            UpdateObservableCollectionFromIList(LogFlowPoints, points1.Points);
+            UpdateObservableCollectionFromIList(LogVolumePoints, points2.Points);
 
             Amplitude = 1;
-
             Frequency = 1;
-
-            SamplingInterval = 0.2;
+            SamplingInterval = 0.1;
+            Repeat = 1;
         }
 
         public void UpdateProfile()
         {
-            switch (CurrentProfileName)
-            {
-                case "Sine":
-                    UpdatePlot(ProfileGenerator.Sine(Amplitude, Frequency, SamplingInterval));
-                    return;
-                case "Square":
-                    UpdatePlot(ProfileGenerator.Square(Amplitude, Frequency, SamplingInterval));
-                    return;
-                case "Triangle":
-                    UpdatePlot(ProfileGenerator.Triangle(Amplitude, Frequency, SamplingInterval));
-                    return;
-                case "Peaks":
-                    UpdatePlot(ProfileGenerator.Peaks(Amplitude, Frequency, SamplingInterval));
-                    return;
-            }
-        }
-
-        private void UpdatePlot(LineSeries lineSeries)
-        {
-            FlowPlotModel.Series.Clear();
-            FlowPlotModel.Series.Add(lineSeries);
-            FlowPlotModel.InvalidatePlot(true);
-            UpdateObservableCollectionFromIList(Points, lineSeries.Points);
-
+            List<DataPoint> points = ProfileGenerator.GetPeriodic(CurrentProfileName, Amplitude, Frequency, SamplingInterval, Repeat);
+            UpdateObservableCollectionFromIList(ControlFlowPoints, points);
         }
 
         private void UpdateObservableCollectionFromIList(ObservableCollection<DataPoint> observablePoints, IList<DataPoint> pointList)
@@ -71,21 +64,5 @@ namespace FlowCalibration
                 observablePoints.Add(point);
             }
         }
-
-        public PlotModel FlowPlotModel { get; private set; }
-
-        public PlotModel LoggerPlotModel { get; private set; }
-
-        public ObservableCollection<DataPoint> Points { get; private set; }
-
-        public ObservableCollection<String> FlowProfileNames { get; private set; }
-
-        public String CurrentProfileName { get; set; }
-
-        public Double Amplitude { get; set; }
-
-        public Double Frequency { get; set; }
-
-        public Double SamplingInterval { get; set; }
     }
 }

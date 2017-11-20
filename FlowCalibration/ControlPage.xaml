@@ -93,10 +93,10 @@
                         <TextBlock  Text="Sampling Interval (s):" Style="{StaticResource smallText}"/>
                         <TextBox Name="SamplingInterval_TextBox" Text="{Binding SamplingInterval}" Style="{StaticResource textBox}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
                         <TextBlock  Text="Repeat (times):" Style="{StaticResource smallText}"/>
-                        <TextBox Name="Repeat_TextBox" Text="1" Style="{StaticResource textBox}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
+                        <TextBox Name="Repeat_TextBox" Text="{Binding Repeat}" Style="{StaticResource textBox}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
                     </StackPanel>
 
-                    <ListView Grid.Row="2" Name="DataPointsListView" Style="{StaticResource listView}"  Margin="20" ItemsSource="{Binding Points}">
+                    <ListView Grid.Row="2" Name="DataPointsListView" Style="{StaticResource listView}"  Margin="20" ItemsSource="{Binding ControlFlowPoints}">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Time" DisplayMemberBinding="{Binding X}" Width="80"/>
@@ -120,9 +120,12 @@
                         <Button Name="SaveProfile_Button" Content="Save Profile" Style="{StaticResource smallButton}" Margin="0,20,10,0"/>
                     </StackPanel>
 
-                    <oxy:PlotView Grid.Row="1" Grid.ColumnSpan="2" Model="{Binding FlowPlotModel}" Style="{StaticResource plotStyle}">
+                    <oxy:Plot Grid.Row="1" Grid.ColumnSpan="2">
+                        <oxy:Plot.Series>
+                            <oxy:LineSeries ItemsSource="{Binding ControlFlowPoints}"/>
+                        </oxy:Plot.Series> 
+                    </oxy:Plot>
 
-                    </oxy:PlotView> 
 
                     <StackPanel Grid.Row="2">
                         <TextBlock Text="COM port" Style="{StaticResource smallText}" Margin="20,0"/>
@@ -159,7 +162,12 @@
                     <Button Content="Export Results" Style="{StaticResource smallButton}" Margin="0,10,10,0"/>
                 </StackPanel>
 
-                <oxy:PlotView Grid.Column="1" Model="{Binding LoggerPlotModel}" Style="{StaticResource plotStyle}"/>
+                <oxy:Plot Grid.Column="1">
+                    <oxy:Plot.Series>
+                        <oxy:LineSeries ItemsSource="{Binding LogFlowPoints}"/>
+                        <oxy:LineSeries ItemsSource="{Binding LogVolumePoints}"/>
+                    </oxy:Plot.Series> 
+                </oxy:Plot>
             </Grid>
         </TabItem>
     </TabControl>

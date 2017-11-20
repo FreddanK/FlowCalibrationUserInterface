@@ -10,84 +10,86 @@ namespace FlowCalibration
 {
     static class ProfileGenerator
     {
-        public static LineSeries Sine(Double amplitude, Double frequency, Double samplingInterval)
-        { //amplitude (flow), frequency (rad/s)
-            Double period = 2 * Math.PI / frequency;    //period (s)
-
-            LineSeries lineSeries = new LineSeries();
-            lineSeries.Title = "Sine";
-            if (samplingInterval == 0) return lineSeries;
-            for (Double x = 0; x <= period; x += samplingInterval)
+        public static List<DataPoint> GetPeriodic(String funcName, Double amplitude, Double frequency, Double samplingInterval, Double repeat)
+        {
+            //amplitude (flow), frequency (rad/s), repeat (times)
+            Func<Double, Double, Double, Double> mathFunction = Zero;
+            switch (funcName)
             {
-                Double y = amplitude * Math.Sin(x*2*Math.PI/period);
-                lineSeries.Points.Add(new DataPoint(x, y));
+                case "Sine":
+                    mathFunction = Sine;
+                    break;
+                case "Square":
+                    mathFunction = Square;
+                    break;
+                case "Triangle":
+                    mathFunction = Triangle;
+                    break;
+                case "Peaks":
+                    mathFunction = Peaks;
+                    break;
             }
 
-            return lineSeries;
+
+            Double period = 2 * Math.PI / frequency;    //period (s)
+
+            List<DataPoint> points = new List<DataPoint>();
+
+            if (samplingInterval == 0) return points;
+            if (frequency == 0) return points;
+
+            for (Double x = 0; x <= period*repeat; x += samplingInterval)
+            {
+                Double y = mathFunction(x, amplitude, period);
+                points.Add(new DataPoint(x, y));
+            }
+
+            List<DataPoint> allPeriods = new List<DataPoint>();
+
+            return points;
         }
 
-        public static LineSeries Square(Double amplitude, Double frequency, Double samplingInterval)
-        { //amplitude (flow), frequency (rad/s)
-            Double period = 2 * Math.PI / frequency;    //period (s)
-
-            LineSeries lineSeries = new LineSeries{ Title = "Square" };
-            if (samplingInterval == 0) return lineSeries;
-            for (Double x = 0; x <= period; x += samplingInterval)
-            {
-                Double y = amplitude * Math.Sign(Math.Sin(x*2 * Math.PI / period));
-                lineSeries.Points.Add(new DataPoint(x, y));
-            }
-
-            return lineSeries;
+        public static Double Sine(Double x, Double amplitude, Double period)
+        { 
+            return amplitude * Math.Sin(x*2*Math.PI/period);
         }
 
-        public static LineSeries Triangle(Double amplitude, Double frequency, Double samplingInterval)
-        {   //amplitude (flow), frequency (rad/s)
-            // https://en.wikipedia.org/wiki/Waveform
-            Double period = 2 * Math.PI / frequency;    //period (s)
-
-            LineSeries lineSeries = new LineSeries { Title = "Triangle" };
-            if (samplingInterval == 0) return lineSeries;
-            for (double x = 0; x <= period; x+= samplingInterval){
-                double y = (2 * amplitude / Math.PI) * Math.Asin(Math.Sin((2 * Math.PI * x) / period));
-                lineSeries.Points.Add(new DataPoint(x, y));
-
-            }
-            return lineSeries;
+        public static Double Square(Double x, Double amplitude, Double period)
+        { 
+            return amplitude * Math.Sign(Math.Sin(x*2 * Math.PI / period));
         }
 
-        public static LineSeries Peaks(Double amplitude, Double frequency, Double samplingInterval)
-        {   //amplitude (flow), frequency (rad/s)
-            
-            Double period = 2 * Math.PI / frequency;    //period (s)
+        public static Double Triangle(Double x, Double amplitude, Double period)
+        {   
+            return (2 * amplitude / Math.PI) * Math.Asin(Math.Sin((2 * Math.PI * x) / period));
+        }
 
-            LineSeries lineSeries = new LineSeries { Title = "Peaks" };
-            double t1 = period / 4;
-            if (samplingInterval == 0) return lineSeries;
-            for (double x = 0; x <= period; x += samplingInterval)
+        public static Double Peaks(Double x, Double amplitude, Double period)
+        {   
+            Double t1 = period / 4;
+            Double y=0;
+            if ((x%period) <= t1)
             {
-                if (x <= t1)
-                {
-                    double y = (2 * amplitude / Math.PI) * Math.Asin(Math.Sin((2 * Math.PI * x) / (period/2)));
-                    lineSeries.Points.Add(new DataPoint(x, y));
-                }
-                else if (x > t1 && x <= t1*2)
-                {
-                    double y = 0;
-                    lineSeries.Points.Add(new DataPoint(x, y));
-                }
-                else if (x > t1*2 && x <= t1 * 3)
-                {
-                    double y = -(2 * amplitude / Math.PI) * Math.Asin(Math.Sin((2 * Math.PI * x) / (period / 2)));
-                    lineSeries.Points.Add(new DataPoint(x, y));
-                }
-                else if (x > t1*3)
-                {
-                    double y = 0;
-                    lineSeries.Points.Add(new DataPoint(x, y));
-                }
+                y = (2 * amplitude / Math.PI) * Math.Asin(Math.Sin((2 * Math.PI * x) / (period/2)));
             }
-            return lineSeries;
+            else if ((x%period) > t1 && (x%period) <= t1*2)
+            {
+                y = 0;
+            }
+            else if ((x%period) > t1*2 && (x%period) <= t1 * 3)
+            {
+                y = -(2 * amplitude / Math.PI) * Math.Asin(Math.Sin((2 * Math.PI * x) / (period / 2)));
+            }
+            else if ((x%period) > t1*3)
+            {
+                y = 0;
+            }
+            return y;
+        }
+
+        public static Double Zero(Double x, Double amplitude, Double period)
+        {
+            return 0;
         }
     }
 }
