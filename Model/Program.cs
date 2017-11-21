@@ -58,12 +58,7 @@ namespace Model
         }
 
         //Data from Frontend to Backend
-        public class FlowTimeReq
-        {
-            public List<double> time = new List<double>(); // [s]
-            public List<double> flow = new List<double>(); // [ml/s]
-        }
-
+        
         public class Backend
         {
             struct MeasurementData
@@ -269,6 +264,7 @@ namespace Model
                 stopWatch.Stop();
                 return Tuple.Create(motorData1, motorData2);
             }
+
             // SEND DATA
             static void SetMotorRPM(double rpm)
             {
@@ -355,16 +351,28 @@ namespace Model
                 return motorAccereration;
             }
 
-            static FlowTimeReq FlowListToMotorSpeed(FlowTimeReq FlowTimeRequested)
+            static List<double> FlowListToMotorSpeed(List<double> flow)
             {
                 // Converting flow (ml/s) to motor speed data
                 // Inputs:
                 // flow (ml/s)
-                for (int i = 1; i <= FlowTimeRequested.time.Count; i++)
+                for (int i = 1; i <= flow.Count; i++)
                 {
-                    FlowTimeRequested.flow[i-1] = FlowToMotorSpeed(FlowTimeRequested.flow[i-1]);
+                    flow[i-1] = FlowToMotorSpeed(flow[i-1]);
                 }
-                return FlowTimeRequested;
+                return flow;
+            }
+
+            static List<double> MotorSpeedListFlow(List<double> motorSpeed)
+            {
+                // Converting flow (ml/s) to motor speed data
+                // Inputs:
+                // flow (ml/s)
+                for (int i = 1; i <= motorSpeed.Count; i++)
+                {
+                    motorSpeed[i - 1] = MotorSpeedToFlow(motorSpeed[i - 1]);
+                }
+                return motorSpeed;
             }
 
             static void WriteToRegister(int registerindex, double data)
@@ -402,7 +410,6 @@ namespace Model
                 double acc = (vt1 - vt0) / (t1 - t0);
                 return acc;
             }
-
            
             static void Main(string[] args)
             {
@@ -467,22 +474,24 @@ namespace Model
                 SetMode(Register.Shutdown);
                 SetMode(34534534);
 
-                FlowTimeReq r = new FlowTimeReq();
+                List<double> time = new List<double>(); // save data from motor
+                List<double> flow = new List<double>(); // save data from motor
 
-                r.time.Add(0.1);
-                r.time.Add(0.2);
-                r.time.Add(0.3);
-                r.time.Add(0.4);
+                time.Add(0.1);
+                time.Add(0.2);
+                time.Add(0.3);
+                time.Add(0.4);
 
-                r.flow.Add(1);
-                r.flow.Add(3);
-                r.flow.Add(2);
-                r.flow.Add(4);
-                r = FlowListToMotorSpeed(r);
-                Console.WriteLine("time: {0} {1} {2} {3}, Speed: {4} {5} {6} {7}", r.time[0], r.time[1], r.time[2], r.time[3], r.flow[0], r.flow[1], r.flow[2], r.flow[3]);
-                Console.WriteLine(r.GetType());
+                flow.Add(1);
+                flow.Add(3);
+                flow.Add(2);
+                flow.Add(4);
 
-                List<double> motorData = SendReceiveData(r.flow, r.time ,Register.TargetInput, Register.Position );
+                flow = FlowListToMotorSpeed(flow);
+
+                Console.WriteLine("time: {0} {1} {2} {3}, Speed: {4} {5} {6} {7}", time[0], time[1], time[2], time[3], flow[0], flow[1], flow[2], flow[3]);
+
+                List<double> motorData = SendReceiveData(flow, time ,Register.TargetInput, Register.Position );
                 Console.WriteLine("firstdata = {0}, secondData = {1}",motorData[0],motorData[1]);
 
 
