@@ -13,25 +13,46 @@ namespace Model
 {
     public class ModbusCommunication
     {
+        IModbusMaster master;
+
         public ModbusCommunication()
         {
+            SerialPort serialPort = new SerialPort()
+            {
+                PortName = "COM1",
+                BaudRate = 57600,
+                DataBits = 8,
+                Parity = Parity.Even,
+                StopBits = StopBits.One,
+                Handshake = Handshake.None,
+                ReadTimeout = 500,
+                WriteTimeout = 500
+            };
 
-            using (SerialPort port = new SerialPort("/dev/ttyUSB0"))
-			{
-				// configure serial port
-				port.BaudRate = 57600;
-				port.DataBits = 8;
-				port.Parity = Parity.Even;
-				port.StopBits = StopBits.One;
-				port.Open();
+            serialPort.Open();
+        
+		    var adapter = new SerialPortAdapter(serialPort);
+            // create modbus master
+            master = ModbusSerialMaster.CreateRtu(adapter);
 
-				Console.WriteLine("port open");
-
-				var adapter = new SerialPortAdapter(port);
-        // create modbus master
-                IModbusSerialMaster master = ModbusSerialMaster.CreateRtu(adapter);
-				Console.WriteLine("modbus master created");
-			}
 		}
+
+        public void RunModbus(ushort startAddress, ushort [] data)
+        {
+            byte slaveAddress = 0x1;
+            
+            master.WriteMultipleRegisters(slaveAddress, startAddress, data);
+
+        }
+
+        public void ReadModbus()
+        {
+
+        }
+
+        public void EndModbus()
+        {
+            master.Dispose();
+        }
     }
 }

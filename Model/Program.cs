@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Threading;
 
 // Change: Read from register
 // Change: Write to register
@@ -413,90 +414,15 @@ namespace Model
            
             static void Main(string[] args)
             {
-                double motors = 100;
-                double motorp = 10000;
-                int motort = 4593;
+                ModbusCommunication modCom = new ModbusCommunication();
+                modCom.RunModbus(400-1,new ushort[] {1});
+                modCom.RunModbus(450-1,new ushort[] {0});
+                modCom.RunModbus(400-1,new ushort[] {21});
+                modCom.RunModbus(450-1,new ushort[] { 0, 9000 });
+                Thread.Sleep(1000);
+                modCom.RunModbus(450-1,new ushort[] {65535, 65535-9000});
+                
 
-                double ms = MotorSpeedToRPM(motors);
-                double mf = MotorSpeedToFlow(motors);
-                double mv = MotorPositionToVolume(motorp);
-                double mt = MotorTorqueToTorque(motort);
-
-                double cs = RPMToMotorSpeed(23.4375);
-                double cf = FlowToMotorSpeed(11.3490034610931);
-                double cv = VolumeToMotorPosition(70.931271631832);
-                double ct = TorqueToMotorTorque(4.593);
-
-                double t0 = 1;
-                double t1 = 1.05;
-                double vt0 = 4;
-                double vt1 = 4.095;
-                double ma = GetAcc(t0, t1, vt0, vt1);
-
-                Console.WriteLine(" RPM: {0}, Volume: {1}, Flow: {2}, Torque: {3}, Acc: {4}, A: {5}", ms, mv, mf, mt, ma, Hardware.Area);
-                Console.WriteLine(" RPM: {0}, Volume: {1}, Flow: {2}, Torque: {3}", cs, cv, cf, ct);
-
-                int a = Register.Position;
-                double b1 = ReadFromRegister(a);
-                a = Register.Speed;
-                double b2 = ReadFromRegister(a);
-                a = Register.Torque;
-                double b3 = ReadFromRegister(a);
-                a = Register.Time;
-                double b4 = ReadFromRegister(a);
-                a = Register.Pressure;
-                double b5 = ReadFromRegister(a);
-                a = Register.Acceleration;
-                double b6 = ReadFromRegister(a);
-                a = Register.Deacceleration;
-                double b7 = ReadFromRegister(a);
-                a = Register.PositionRamp;
-                double b8 = ReadFromRegister(a);
-                a = Register.SpeedRamp;
-                double b9 = ReadFromRegister(a);
-                a = Register.Shutdown;
-                double b10 = ReadFromRegister(a);
-                a = 459040;
-                double b11 = ReadFromRegister(a);
-                Console.WriteLine(" b1: {0}, b2: {1}, b3: {2}, b4: {3}, b5: {4}, b6: {5}, b7: {6}, b8: {7}, b9: {8}, b10: {9}, b11: {10}", b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11);
-
-                MotorMeasurementData x = getMotorMeasurements();
-                Console.WriteLine(" speed: {0}, pos: {1}, torque: {2}, time: {3}, pressure: {4}", x.speed, x.position, x.torque, x.time, x.pressure);
-
-                MeasurementData xx = getMeasurements();
-                Console.WriteLine(" flow: {0}, pos: {1}, torque: {2}, time: {3}, pressure: {4}, rpm: {5}, volume: {6}", xx.flow, xx.position, xx.torque, xx.time, xx.pressure, xx.rpm, xx.volume);
-
-                double cc = RPMToMotorSpeed(60);
-                Console.WriteLine(" RPM: {0}", cc);
-
-                SetMode(Register.PositionRamp);
-                SetMode(Register.SpeedRamp);
-                SetMode(Register.Shutdown);
-                SetMode(34534534);
-
-                List<double> time = new List<double>(); // save data from motor
-                List<double> flow = new List<double>(); // save data from motor
-
-                time.Add(0.1);
-                time.Add(0.2);
-                time.Add(0.3);
-                time.Add(0.4);
-
-                flow.Add(1);
-                flow.Add(3);
-                flow.Add(2);
-                flow.Add(4);
-
-                flow = FlowListToMotorSpeed(flow);
-
-                Console.WriteLine("time: {0} {1} {2} {3}, Speed: {4} {5} {6} {7}", time[0], time[1], time[2], time[3], flow[0], flow[1], flow[2], flow[3]);
-
-                List<double> motorData = SendReceiveData(flow, time ,Register.TargetInput, Register.Position );
-                Console.WriteLine("firstdata = {0}, secondData = {1}",motorData[0],motorData[1]);
-
-
-
-                //Console.Title = Console.ReadLine();
             }
         }
     }
