@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
- 
 
 // Change: Read from register
 // Change: Write to register
@@ -55,6 +54,7 @@ namespace Model
             public const int PositionRamp = 21;
             public const int SpeedRamp = 33;
             public const int Shutdown = 4;
+            public const int MotorOff = 0;
         }
 
         //Data from Frontend to Backend
