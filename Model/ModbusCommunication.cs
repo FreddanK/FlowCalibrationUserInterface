@@ -37,7 +37,7 @@ namespace Model
 
 		}
 
-        public void RunModbus(ushort startAddress, ushort [] data)
+        public static void RunModbus(ushort startAddress, ushort [] data) //changed to static
         {
             byte slaveAddress = 0x1;
             master.WriteMultipleRegisters(slaveAddress, startAddress, data);

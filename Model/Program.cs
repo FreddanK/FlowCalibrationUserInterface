@@ -396,6 +396,9 @@ namespace Model
             {
                 // Writes data [data] in register [registerindex]
                 //WRITE DATA TO INDEX
+
+                //How to cast from double to ushort[] ?
+                ModbusCommunication.RunModbus((ushort)registerindex, (ushort[])data);
                 Console.WriteLine("{0} written to register {1}",data,registerindex);
             }
 
