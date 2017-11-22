@@ -394,11 +394,18 @@ namespace Model
 
             static void WriteToRegister(int registerindex, double data)
             {
-                // Writes data [data] in register [registerindex]
-                //WRITE DATA TO INDEX
+				// Writes data [data] in register [registerindex]
+				//WRITE DATA TO INDEX
 
-                //How to cast from double to ushort[] ?
-                ModbusCommunication.RunModbus((ushort)registerindex, (ushort[])data);
+				//How to cast from double to ushort[] ?
+                // if the double can be represented by a Int32 this should work
+                // the largest value we ever need to write to a register is int32
+                int intdata = (int) data;
+                ushort[] m = new ushort[2];
+				m[0] = (ushort)intdata;
+				m[1] = (ushort)(intdata >> 16);
+
+                ModbusCommunication.RunModbus((ushort)registerindex, m);
                 Console.WriteLine("{0} written to register {1}",data,registerindex);
             }
 
