@@ -179,13 +179,11 @@ namespace Model
             // INTEGRATION
             static List<double> Integrate(List<double> x, List<double> y){
                 // calculate the integral of list y using SOH
-
                 if (x.Count() != y.Count())
                 {
                     throw new Exception("Input lists not of equal length");
                 }
                 List<double> primitive = new List<double>();
-
                 for (int i = 0; i <= x.Count()-1-1; i++)
                 {
                     double A = y[i] * (x[i + 1] - x[i]);
@@ -239,7 +237,6 @@ namespace Model
             {
                 // Send targetvalues to register "writeRegister" at specified times.
                 // reads data from "readRegister"
-
 
                 // abort if lists of different lengths
                 if (targetvalues.Count() != time.Count())
@@ -430,29 +427,13 @@ namespace Model
            
             static void Main(string[] args)
             {
-                //ModbusCommunication modCom = new ModbusCommunication();
-                //modCom.RunModbus(400-1,new ushort[] {1});
-                //modCom.RunModbus(450-1,new ushort[] {0});
-                //modCom.RunModbus(400-1,new ushort[] {21});
-                //modCom.RunModbus(450-1,new ushort[] { 0, 9000 });
-                //Thread.Sleep(1000);
-                //modCom.RunModbus(450-1,new ushort[] {65535, 65535-9000});
-
-
-                // Ta bort detta sen gurraboy
-                List<double> y = new List<double>();
-                y.Add(1);
-                y.Add(10);
-                y.Add(100);
-               
-                List<double> x = new List<double>();
-                x.Add(1);
-                x.Add(2);
-                x.Add(3);
-
-                List<double> result = Integrate(x,y);
-                result.ForEach(Console.WriteLine);
-
+                ModbusCommunication modCom = new ModbusCommunication();
+                modCom.RunModbus(400-1,new ushort[] {1});
+                modCom.RunModbus(450-1,new ushort[] {0});
+                modCom.RunModbus(400-1,new ushort[] {21});
+                modCom.RunModbus(450-1,new ushort[] { 0, 9000 });
+                Thread.Sleep(1000);
+                modCom.RunModbus(450-1,new ushort[] {65535, 65535-9000});
 
             }
         }
