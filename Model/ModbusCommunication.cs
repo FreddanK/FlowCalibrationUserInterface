@@ -19,7 +19,7 @@ namespace Model
         {
             SerialPort serialPort = new SerialPort()
             {
-                PortName = "COM1",
+                PortName = "COM1", //the port is system dependant. Needs a way to pick the right one
                 BaudRate = 57600,
                 DataBits = 8,
                 Parity = Parity.Even,
