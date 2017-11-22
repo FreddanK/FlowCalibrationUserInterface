@@ -40,14 +40,16 @@ namespace Model
         public void RunModbus(ushort startAddress, ushort [] data)
         {
             byte slaveAddress = 0x1;
-            
             master.WriteMultipleRegisters(slaveAddress, startAddress, data);
 
         }
 
-        public void ReadModbus()
+        public ushort[] ReadModbus(ushort startAdress, ushort registerLength)
         {
+            byte slaveAddress = 0x1;
+            ushort[] data = master.ReadHoldingRegisters(slaveAddress,startAdress, registerLength);
 
+            return data;
         }
 
         public void EndModbus()
