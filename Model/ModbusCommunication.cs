@@ -13,7 +13,7 @@ namespace Model
 {
     public class ModbusCommunication
     {
-        IModbusMaster master;
+        static IModbusMaster master;
 
         public ModbusCommunication()
         {
