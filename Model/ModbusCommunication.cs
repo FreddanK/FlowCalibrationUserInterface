@@ -13,13 +13,13 @@ namespace Model
 {
     public class ModbusCommunication
     {
-        IModbusMaster master;
+        static IModbusMaster master;
 
         public ModbusCommunication()
         {
             SerialPort serialPort = new SerialPort()
             {
-                PortName = "COM1",
+                PortName = "COM1", //the port is system dependant. Needs a way to pick the right one
                 BaudRate = 57600,
                 DataBits = 8,
                 Parity = Parity.Even,
@@ -37,17 +37,19 @@ namespace Model
 
 		}
 
-        public void RunModbus(ushort startAddress, ushort [] data)
+        public static void RunModbus(ushort startAddress, ushort [] data) //changed to static
         {
             byte slaveAddress = 0x1;
-            
             master.WriteMultipleRegisters(slaveAddress, startAddress, data);
 
         }
 
-        public void ReadModbus()
+        public ushort[] ReadModbus(ushort startAdress, ushort registerLength)
         {
+            byte slaveAddress = 0x1;
+            ushort[] data = master.ReadHoldingRegisters(slaveAddress,startAdress, registerLength);
 
+            return data;
         }
 
         public void EndModbus()
