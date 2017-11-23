@@ -446,10 +446,11 @@ namespace Model
 
                 MotorControl motCon = new MotorControl(modCom);
 
-                List<Int32> ticks = new List<Int32>() {0,4000,8000,16000,20000,16000,8000,4000,0,-2000,0};
-                List<double> times = new List<double>() {0,1,2,3,4,5,6,7,8,9,10};
+                List<Int32> ticks = new List<Int32>() {0,2000,4000,8000,4000,500,-2000,-2000,0};
+                List<double> times = new List<double>() {0,1,2,3,4,5,6,7,8};
 
-                motCon.RunTickSequence( ticks, times);
+                //motCon.RunTicksToVelocitySequence(ticks, times);
+                motCon.RunTickSequence(ticks, times);
 
                 Console.ReadLine();
                 modCom.EndModbus();

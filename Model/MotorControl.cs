@@ -111,13 +111,70 @@ namespace Model
                     stopWatch.Stop();
                     break;
                 }
-
-                // Convert units
-                RecordedTimes = TimeToSeconds(MotorRecordedTimes);
-                RecordedPositions = TickToPosition(MotorRecordedPositions);
-                RecordedVelocities = TicksPerSecondToVelocity(MotorRecordedVelocities);
             }
             stopWatch.Stop();
+
+            // Go to position zero
+            ModCom.RunModbus(Register.TargetInput, (Int32)0);
+
+            // Convert units
+            RecordedTimes = TimeToSeconds(MotorRecordedTimes);
+            RecordedPositions = TickToPosition(MotorRecordedPositions);
+            RecordedVelocities = TicksPerSecondToVelocity(MotorRecordedVelocities);
+        }
+
+        public void RunTicksToVelocitySequence(List<int> ticksPerSecond, List<double> times)
+        {
+            if (ticksPerSecond.Count() != times.Count())
+            {
+                throw new Exception("Input lists not of equal length");
+            }
+
+            // Set mode
+            ModCom.RunModbus(Register.Mode, Mode.SpeedRamp);
+
+            Stopwatch stopWatch = new Stopwatch();
+
+            List<int> MotorRecordedTimes = new List<int>();
+            List<int> MotorRecordedPositions = new List<int>();
+            List<int> MotorRecordedVelocities = new List<int>();
+
+            // Set time = 0
+            ModCom.RunModbus(Register.Time, (Int32)0);
+
+            stopWatch.Start();
+
+            int i = 0;
+
+            while (i < ticksPerSecond.Count())
+            {
+                if (times[i] <= stopWatch.Elapsed.TotalSeconds)
+                { // If more time have elapsed than time[i]
+                  // Write and read to/from modbus
+                    ModCom.RunModbus(Register.TargetInput, (Int32)ticksPerSecond[i]);
+                    MotorRecordedTimes.Add(ModCom.ReadModbus(Register.Time, 2, false));
+                    MotorRecordedPositions.Add(ModCom.ReadModbus(Register.Position, 2, true));
+                    MotorRecordedVelocities.Add(ModCom.ReadModbus(Register.Speed, 1, false));
+                    i += 1;
+                }
+
+                double overtime = 30;
+                if (stopWatch.Elapsed.TotalSeconds > overtime)
+                {
+                    Console.WriteLine("RunTickSequence running more than [overtime] seconds. Function stopped.");
+                    stopWatch.Stop();
+                    break;
+                }
+            }
+            stopWatch.Stop();
+
+            // Go to speed zero
+            ModCom.RunModbus(Register.TargetInput, (Int32)0);
+
+            // Convert units
+            RecordedTimes = TimeToSeconds(MotorRecordedTimes);
+            RecordedPositions = TickToPosition(MotorRecordedPositions);
+            RecordedVelocities = TicksPerSecondToVelocity(MotorRecordedVelocities);
         }
 
         public List<int> PositionToTick(List<Double> positions)
