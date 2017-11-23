@@ -51,6 +51,21 @@ namespace Model
             // SpeedRamp (Mode 33): Speed control mode with ramp control.
             // Shutdown (Mode 4)
             public const ushort Mode = 400;
+
+            // 20 possible events. Mapped by increase of 20.... I guess
+            // goes from 680 to 699
+            public const ushort EventControl = 680;
+            // goes from 700 to 719
+            public const ushort EventTrgReg = 700;
+            // goes from 720 to 739
+            public const ushort EventTrgData = 720;
+            // goes from 740 to 759
+            public const ushort EventSrcReg = 740;
+			// goes from 760 to 779
+			public const ushort EventSrcData = 760;
+			// goes from 780 to 799
+			public const ushort EventDstReg = 780;
+
         }
         struct Mode
         {
@@ -58,6 +73,31 @@ namespace Model
             public const Int16 SpeedRamp = 33;
             public const Int16 Shutdown = 4;
             public const Int16 MotorOff = 0;
+        }
+
+        struct EventLogic
+        {
+            /*
+            0    Always      true
+            1   =       Equal
+            2   !=      Not equal
+            3   <       Less than
+            4   >       Greater than
+            5   or      Bitwise or
+            6   nor     Bitwise not or
+            7   and     Bitwise and
+            8   nand    Bitwise not and
+            9   xor     Bitwise exclusive or
+            10  nxor    Bitwise not exclusive or
+            11  +       Add
+            12  -       Subtract
+            13  *       Multiply
+            14  /       Divide
+            15  Value   Takes data value directly
+            */
+
+            public const Int16 GreaterThan = 4;
+            public const Int16 UseValue = 15;
         }
         
         public MotorControl(ModbusCommunication modCom)
