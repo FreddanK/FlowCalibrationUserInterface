@@ -13,13 +13,13 @@ namespace Model
 {
     public class ModbusCommunication
     {
-        IModbusMaster master;
+        static IModbusMaster master;
 
         public ModbusCommunication()
         {
             SerialPort serialPort = new SerialPort()
             {
-                PortName = "COM1",
+                PortName = "COM1", //the port is system dependant. Needs a way to pick the right one
                 BaudRate = 57600,
                 DataBits = 8,
                 Parity = Parity.Even,
@@ -43,11 +43,12 @@ namespace Model
 
             if (registerStartAddress == 0)
             {
-                //Throw Exception
+                throw new Exception("Illegal register address 0");
             }
 
             int MAXBYTE = 65536;
             byte slaveAddress = 0x1;
+
             ushort startAddress = (ushort)(registerStartAddress - 1);
 
             ushort[] dataUShort = new ushort[2];
@@ -75,7 +76,7 @@ namespace Model
             // For Int16 data (Single register)
             if (registerStartAddress == 0)
             {
-                //Throw Exception
+                throw new Exception("Illegal register address 0");
             }
             
             byte slaveAddress = 0x1;
@@ -92,7 +93,7 @@ namespace Model
 
             if (registerStartAddress == 0)
             {
-                //Throw Exception
+                throw new Exception("Illegal register address 0");
             }
 
             int MAXBYTE = 65536;
@@ -118,9 +119,9 @@ namespace Model
 
             if (registerStartAddress == 0)
             {
-                //Throw Exception
+                throw new Exception("Illegal register address 0");
             }
-            
+
             byte slaveAddress = 0x1;
             ushort startAddress = (ushort)(registerStartAddress - 1);
 
@@ -130,6 +131,15 @@ namespace Model
             // Convert dataValue (ushort[]) to int
             returnData = dataValue[0];
             return returnData;
+        }
+
+        public ushort[] ReadModbus(ushort startAdress, ushort registerLength)
+        {
+            byte slaveAddress = 0x1;
+            ushort[] data = master.ReadHoldingRegisters(slaveAddress,startAdress, registerLength);
+
+            return data;
+
         }
 
         public void EndModbus()

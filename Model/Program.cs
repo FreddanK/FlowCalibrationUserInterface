@@ -180,13 +180,11 @@ namespace Model
             // INTEGRATION
             static List<double> Integrate(List<double> x, List<double> y){
                 // calculate the integral of list y using SOH
-
                 if (x.Count() != y.Count())
                 {
                     throw new Exception("Input lists not of equal length");
                 }
                 List<double> primitive = new List<double>();
-
                 for (int i = 0; i <= x.Count()-1-1; i++)
                 {
                     double A = y[i] * (x[i + 1] - x[i]);
@@ -240,7 +238,6 @@ namespace Model
             {
                 // Send targetvalues to register "writeRegister" at specified times.
                 // reads data from "readRegister"
-
 
                 // abort if lists of different lengths
                 if (targetvalues.Count() != time.Count())
@@ -395,9 +392,19 @@ namespace Model
 
             static void WriteToRegister(int registerindex, double data)
             {
-                // Writes data [data] in register [registerindex]
-                //WRITE DATA TO INDEX
-                Console.WriteLine("{0} written to register {1}",data,registerindex);
+				// Writes data [data] in register [registerindex]
+				//WRITE DATA TO INDEX
+
+				//How to cast from double to ushort[] ?
+                // if the double can be represented by a Int32 this should work
+                // the largest value we ever need to write to a register is int32
+                //int intdata = (int) data;
+                //ushort[] m = new ushort[2];
+				//m[0] = (ushort)intdata;
+				//m[1] = (ushort)(intdata >> 16);
+
+                //ModbusCommunication.RunModbus((ushort)registerindex, m);
+                //Console.WriteLine("{0} written to register {1}",data,registerindex);
             }
 
             static void SetMode(int mode)
@@ -431,7 +438,6 @@ namespace Model
            
             static void Main(string[] args)
             {
-<<<<<<< HEAD
                 ModbusCommunication modCom = new ModbusCommunication();
                 modCom.RunModbus(Register.Mode,1);
                 modCom.RunModbus(Register.TargetInput,0);
@@ -454,7 +460,7 @@ namespace Model
                 //Console.WriteLine("Value: {0}", dataValue[0]);
 
                 Console.ReadLine();
-=======
+
                 //ModbusCommunication modCom = new ModbusCommunication();
                 //modCom.RunModbus(400-1,new ushort[] {1});
                 //modCom.RunModbus(450-1,new ushort[] {0});
@@ -478,7 +484,13 @@ namespace Model
                 List<double> result = Integrate(x,y);
                 result.ForEach(Console.WriteLine);
 
->>>>>>> 3654d7783ff2e75b05c35d79c41c70c0c0ec9b15
+                //ModbusCommunication modCom = new ModbusCommunication();
+                //modCom.RunModbus(400-1,new ushort[] {1});
+                //modCom.RunModbus(450-1,new ushort[] {0});
+                //modCom.RunModbus(400-1,new ushort[] {21});
+                //modCom.RunModbus(450-1,new ushort[] { 0, 9000 });
+                //Thread.Sleep(1000);
+                //modCom.RunModbus(450-1,new ushort[] {65535, 65535-9000});
 
             }
         }
