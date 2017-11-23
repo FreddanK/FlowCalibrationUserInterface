@@ -35,6 +35,7 @@ namespace Model
             // DEFINE REGISTERS 
             // REGISTER: 450/451 (int32)
             public const ushort TargetInput = 450;
+
             // REGISTER: 200/201
             public const ushort Position = 200;
             // REGISTER: 202 
