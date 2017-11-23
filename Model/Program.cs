@@ -176,21 +176,7 @@ namespace Model
                 return p;
             }
 
-            // INTEGRATION
-            static List<double> Integrate(List<double> x, List<double> y){
-                // calculate the integral of list y using SOH
-                if (x.Count() != y.Count())
-                {
-                    throw new Exception("Input lists not of equal length");
-                }
-                List<double> primitive = new List<double>();
-                for (int i = 0; i <= x.Count()-1-1; i++)
-                {
-                    double A = y[i] * (x[i + 1] - x[i]);
-                    primitive.Add(A);
-                }
-                return primitive;
-            }
+        
             // SEND & RECEIVE DATA
             static List<double> SendReceiveData(List<double> targetvalues, List<double> time, int writeRegister, int readRegister){
                 // Send targetvalues to register "writeRegister" at specified times.
@@ -437,13 +423,31 @@ namespace Model
            
             static void Main(string[] args)
             {
-                ModbusCommunication modCom = new ModbusCommunication();
-                modCom.RunModbus(400-1,new ushort[] {1});
-                modCom.RunModbus(450-1,new ushort[] {0});
-                modCom.RunModbus(400-1,new ushort[] {21});
-                modCom.RunModbus(450-1,new ushort[] { 0, 9000 });
-                Thread.Sleep(1000);
-                modCom.RunModbus(450-1,new ushort[] {65535, 65535-9000});
+                
+                List<double> flows = new List<double>();
+                flows.Add(200);
+                flows.Add(-100);
+                flows.Add(-200);
+
+                List<double> times = new List<double>();
+                times.Add(1);
+                times.Add(2);
+                times.Add(3);
+                ProfileConverter testConverter = new ProfileConverter();
+                List<double> pos = testConverter.FlowToPosition(times,flows);
+                pos.ForEach(Console.WriteLine);
+                Console.WriteLine();
+
+                List<double> vel = testConverter.FlowToVelocity(flows);
+                vel.ForEach(Console.WriteLine);
+                Console.WriteLine();
+
+                List<double> flows2 = testConverter.VelocityToFlow(vel);
+                flows2.ForEach(Console.WriteLine);
+                Console.WriteLine();
+
+                List<double> vol2 = testConverter.PositionToVolume(pos);
+                vol2.ForEach(Console.WriteLine);
 
             }
         }
