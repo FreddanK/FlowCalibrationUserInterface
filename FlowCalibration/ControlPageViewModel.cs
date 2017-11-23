@@ -28,6 +28,9 @@ namespace FlowCalibration
         public Double Repeat { get; set; }
         public int R { get; set; }
 
+        ModbusCommunication modCom;
+        MotorControl motorControl;
+
         public ControlPageViewModel()
         {
             FlowProfileNames = new ObservableCollection<string>
@@ -51,6 +54,9 @@ namespace FlowCalibration
             SamplingInterval = 0.1;
             Repeat = 1;
             R = 1;
+
+            modCom = new ModbusCommunication();
+            motorControl = new MotorControl(modCom);
         }
 
         public void UpdateProfile()
@@ -78,6 +84,9 @@ namespace FlowCalibration
                 times.Add(point.X);
                 values.Add(point.Y);
             }
+
+            List<int> tickValues = motorControl.PositionToTick(values);
+            motorControl.RunTickSequence(tickValues, times);
 
             // Backend.RunFlowValues(times,values);
         }
