@@ -21,27 +21,28 @@ namespace Model
         {
             // DEFINE REGISTERS 
             // REGISTER: 450/451 (int32)
-            public const int TargetInput = 450;
+            public const Int32 TargetInput = 450;
             // REGISTER: 200/201 (int32)
-            public const int Position = 200;
+            public const Int32 Position = 200;
             // REGISTER: 202 (int16)
-            public const int Speed = 202;
+            public const Int16 Speed = 202;
             // REGISTER: 203 (int16)
-            public const int Torque = 203;
+            public const Int16 Torque = 203;
             // REGISTER: 420/421 (int32)
-            public const int Time = 420;
+            public const Int32 Time = 420;
             // REGISTER: 170-173 (int16)
-            public const int Pressure = 170;
+            public const Int16 Pressure = 170;
             // REGISTER: 353 (int16)
-            public const int Acceleration = 353;
+            public const Int16 Acceleration = 353;
             // REGISTER: 354 (int16)
-            public const int Deacceleration = 354;
+            public const Int16 Deacceleration = 354;
             // PositionRamp (Mode 21): Closed control of position with ramp control.
             // SpeedRamp (Mode 33): Speed control mode with ramp control.
             // Shutdown (Mode 4)
-            public const int PositionRamp = 400;
-            public const int SpeedRamp = 400;
-            public const int Shutdown = 400;
+            public const Int16 PositionRamp = 400;
+            public const Int16 SpeedRamp = 400;
+            public const Int16 Shutdown = 400;
+            public const Int16 Mode = 400;
         }
         static class Hardware
         {
@@ -383,13 +384,13 @@ namespace Model
 				//How to cast from double to ushort[] ?
                 // if the double can be represented by a Int32 this should work
                 // the largest value we ever need to write to a register is int32
-                int intdata = (int) data;
-                ushort[] m = new ushort[2];
-				m[0] = (ushort)intdata;
-				m[1] = (ushort)(intdata >> 16);
+                //int intdata = (int) data;
+                //ushort[] m = new ushort[2];
+				//m[0] = (ushort)intdata;
+				//m[1] = (ushort)(intdata >> 16);
 
-                ModbusCommunication.RunModbus((ushort)registerindex, m);
-                Console.WriteLine("{0} written to register {1}",data,registerindex);
+                //ModbusCommunication.RunModbus((ushort)registerindex, m);
+                //Console.WriteLine("{0} written to register {1}",data,registerindex);
             }
 
             static void SetMode(int mode)
@@ -424,30 +425,46 @@ namespace Model
             static void Main(string[] args)
             {
                 
-                List<double> flows = new List<double>();
-                flows.Add(200);
-                flows.Add(-100);
-                flows.Add(-200);
+                ModbusCommunication modCom = new ModbusCommunication();
+                modCom.RunModbus(Register.Mode,1);
+                modCom.RunModbus(Register.TargetInput,0);
+                modCom.RunModbus(Register.Mode,21);
+                int dataValue;
 
-                List<double> times = new List<double>();
-                times.Add(1);
-                times.Add(2);
-                times.Add(3);
-                ProfileConverter testConverter = new ProfileConverter();
-                List<double> pos = testConverter.FlowToPosition(times,flows);
-                pos.ForEach(Console.WriteLine);
-                Console.WriteLine();
+                modCom.RunModbus(Register.TargetInput,5000);
 
-                List<double> vel = testConverter.FlowToVelocity(flows);
-                vel.ForEach(Console.WriteLine);
-                Console.WriteLine();
+                Thread.Sleep(3000);
 
-                List<double> flows2 = testConverter.VelocityToFlow(vel);
-                flows2.ForEach(Console.WriteLine);
-                Console.WriteLine();
+                dataValue = modCom.ReadModbus(Register.Position, true);
+                Console.WriteLine("Value: {0}", dataValue);
 
-                List<double> vol2 = testConverter.PositionToVolume(pos);
-                vol2.ForEach(Console.WriteLine);
+                modCom.RunModbus(Register.TargetInput,-5000);
+                Thread.Sleep(3000);
+
+                dataValue = modCom.ReadModbus(Register.Position, true);
+                Console.WriteLine("Value: {0}", dataValue);
+                //Console.WriteLine("Value: {0}, {1}", dataValue[0], dataValue[1]);
+                //Console.WriteLine("Value: {0}", dataValue[0]);
+
+                Console.ReadLine();
+
+                //ModbusCommunication modCom = new ModbusCommunication();
+                //modCom.RunModbus(400-1,new ushort[] {1});
+                //modCom.RunModbus(450-1,new ushort[] {0});
+                //modCom.RunModbus(400-1,new ushort[] {21});
+                //modCom.RunModbus(450-1,new ushort[] { 0, 9000 });
+                //Thread.Sleep(1000);
+                //modCom.RunModbus(450-1,new ushort[] {65535, 65535-9000});
+
+
+                //ModbusCommunication modCom = new ModbusCommunication();
+                //modCom.RunModbus(400-1,new ushort[] {1});
+                //modCom.RunModbus(450-1,new ushort[] {0});
+                //modCom.RunModbus(400-1,new ushort[] {21});
+                //modCom.RunModbus(450-1,new ushort[] { 0, 9000 });
+                //Thread.Sleep(1000);
+                //modCom.RunModbus(450-1,new ushort[] {65535, 65535-9000});
+
 
             }
         }
