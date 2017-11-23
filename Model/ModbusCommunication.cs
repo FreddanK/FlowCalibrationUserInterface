@@ -85,7 +85,7 @@ namespace Model
             ushort[] dataUShort = new ushort[] { (ushort)data };
             master.WriteMultipleRegisters(slaveAddress, startAddress, dataUShort);
         }
-
+  
         public int ReadModbus(ushort registerStartAddress, ushort nrOfRegisters, Boolean signedValue)
         {
             // Reads nrOfRegisters amount of registers and returns thier combined data as an int

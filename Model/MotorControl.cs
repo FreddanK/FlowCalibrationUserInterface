@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 
 namespace Model
-{
-    //WHAT UNITS IN LISTS RECORDED...
+{   
 
     class MotorControl
 	// MotorControl - Controls the motor with a list of position and times or velocity and times. 
@@ -26,38 +25,43 @@ namespace Model
         static class Hardware
         {
             //DEFINE HARDWARE PARAMETERS
-            public const double Pitch = 32; // [mm] of gearwheel
-            public const double TicksPerRev = 4096; // [ticks per revolution position data]
-            public const double VelocityResolution = 16; // [velocity resolution is position resolution / constant]
+            public const int Pitch = 32; // [mm] of gearwheel
+            public const int TicksPerRev = 4096; // [ticks per revolution position data]
+            public const int VelocityResolution = 16; // [velocity resolution is position resolution / constant]
+            public const int TimePerSecond = 2000; // [time register +2000 each second]
         }
         static class Register
         {
             // DEFINE REGISTERS 
             // REGISTER: 450/451 (int32)
-            public const Int32 TargetInput = 450;
-            // REGISTER: 200/201 (int32)
-            public const Int32 Position = 200;
-            // REGISTER: 202 (int16)
-            public const Int16 Speed = 202;
-            // REGISTER: 203 (int16)
-            public const Int16 Torque = 203;
-            // REGISTER: 420/421 (int32)
-            public const Int32 Time = 420;
-            // REGISTER: 170-173 (int16)
-            public const Int16 Pressure = 170;
-            // REGISTER: 353 (int16)
-            public const Int16 Acceleration = 353;
-            // REGISTER: 354 (int16)
-            public const Int16 Deacceleration = 354;
+            public const ushort TargetInput = 450;
+            // REGISTER: 200/201
+            public const ushort Position = 200;
+            // REGISTER: 202 
+            public const ushort Speed = 202;
+            // REGISTER: 203 
+            public const ushort Torque = 203;
+            // REGISTER: 420/421
+            public const ushort Time = 420;
+            // REGISTER: 170-173
+            public const ushort Pressure = 170;
+            // REGISTER: 353 
+            public const ushort Acceleration = 353;
+            // REGISTER: 354 
+            public const ushort Deacceleration = 354;
             // PositionRamp (Mode 21): Closed control of position with ramp control.
             // SpeedRamp (Mode 33): Speed control mode with ramp control.
             // Shutdown (Mode 4)
-            public const Int16 PositionRamp = 400;
-            public const Int16 SpeedRamp = 400;
-            public const Int16 Shutdown = 400;
-            public const Int16 Mode = 400;
+            public const ushort Mode = 400;
         }
-
+        static class Mode
+        {
+            public const Int16 PositionRamp = 21;
+            public const Int16 SpeedRamp = 33;
+            public const Int16 Shutdown = 4;
+            public const Int16 MotorOff = 0;
+        }
+        
         public MotorControl(ModbusCommunication modCom)
         {
             ModCom = modCom;
@@ -76,30 +80,34 @@ namespace Model
                 throw new Exception("Input lists not of equal length");
             }
 
-            // SET MODE?
+            // Set mode
+            ModCom.RunModbus(Register.Mode, Mode.PositionRamp);
 
             Stopwatch stopWatch = new Stopwatch();
 
-            //Write to MODBUS INIT, always time = 0
+            List<int> MotorRecordedTimes = new List<int>();
+            List<int> MotorRecordedPositions = new List<int>();
+            List<int> MotorRecordedVelocities = new List<int>();
 
-            int i = 1;
+            // Set time = 0
+            ModCom.RunModbus(Register.Time, (Int32)0);
 
             stopWatch.Start();
 
+            int i = 0;
+
             while (i < ticks.Count())
             {
-
                 if (times[i] <= stopWatch.Elapsed.TotalSeconds)
                 { // If more time have elapsed than time[i]
-                    // WRITE TO MODUS WriteToRegister(writeRegister, targetvalues[i]); // write data
+                  // Write and read to/from modbus
+                    ModCom.RunModbus(Register.TargetInput,(Int32)ticks[i]);
+                    MotorRecordedTimes.Add(ModCom.ReadModbus(Register.Time, 2, false));
+                    MotorRecordedPositions.Add(ModCom.ReadModbus(Register.Position, 2, true));
+                    MotorRecordedVelocities.Add(ModCom.ReadModbus(Register.Speed, 1, false));
                     i += 1;
                 }
-
-                // READ DATA FROM MODBUS
-                RecordedTimes.Add(ModCom.ReadModbus(Register.Time, false));
-                RecordedPositions.Add(ModCom.ReadModbus(Register.Position, true));
-                RecordedVelocities.Add(ModCom.ReadModbus(Register.Speed, false));
-
+                
                 double overtime = 30;
                 if (stopWatch.Elapsed.TotalSeconds > overtime)
                 {
@@ -107,6 +115,11 @@ namespace Model
                     stopWatch.Stop();
                     break;
                 }
+
+                // Convert units
+                RecordedTimes = TimeToSeconds(MotorRecordedTimes);
+                RecordedPositions = TickToPosition(MotorRecordedPositions);
+                RecordedVelocities = TicksPerSecondToVelocity(MotorRecordedVelocities);
             }
             stopWatch.Stop();
         }
@@ -140,6 +153,16 @@ namespace Model
                 velocity[i] = ticksPerSecond[i] * Hardware.Pitch * Hardware.VelocityResolution/Hardware.TicksPerRev/10;
             }
             return velocity;
+        }
+
+        public List<Double> TimeToSeconds(List<int> time)
+        {
+            List<Double> seconds = new List<Double>();
+            for (int i = 0; i < time.Count; i++)
+            {
+                seconds[i] = time[i] / Hardware.TimePerSecond;
+            }
+            return seconds;
         }
     }
 }
