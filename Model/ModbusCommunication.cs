@@ -37,7 +37,7 @@ namespace Model
 
 		}
 
-        public void RunModbus(Int32 registerStartAddress, int data)
+        public void RunModbus(ushort registerStartAddress, Int32 data)
         {
             // For Int32 data (Double registers)
 
@@ -71,7 +71,7 @@ namespace Model
             
             master.WriteMultipleRegisters(slaveAddress, startAddress, dataUShort);
         }
-        public void RunModbus(Int16 registerStartAddress, int data)
+        public void RunModbus(ushort registerStartAddress, Int16 data)
         {
             // For Int16 data (Single register)
             if (registerStartAddress == 0)
@@ -80,15 +80,15 @@ namespace Model
             }
             
             byte slaveAddress = 0x1;
-            ushort startAddress = ((ushort)(registerStartAddress - 1));
+            ushort startAddress = (ushort)(registerStartAddress - 1);
 
             ushort[] dataUShort = new ushort[] { (ushort)data };
             master.WriteMultipleRegisters(slaveAddress, startAddress, dataUShort);
         }
 
-        public int ReadModbus(Int32 registerStartAddress, Boolean signedValue)
+        public int ReadModbus(ushort registerStartAddress, ushort nrOfRegisters, Boolean signedValue)
         {
-            // For Int32 data (Double registers)
+            // Reads nrOfRegisters amount of registers and returns thier combined data as an int
             int returnData;
 
             if (registerStartAddress == 0)
@@ -100,8 +100,8 @@ namespace Model
             byte slaveAddress = 0x1;
             ushort startAddress = (ushort)(registerStartAddress - 1);
 
-            ushort[] dataValue = new ushort[2];
-            dataValue = master.ReadHoldingRegisters(slaveAddress, startAddress, 2);
+            ushort[] dataValue = new ushort[nrOfRegisters];
+            dataValue = master.ReadHoldingRegisters(slaveAddress, startAddress, nrOfRegisters);
             
             // Convert dataValue (ushort[]) to int
             if (signedValue && dataValue[0] >= 32768)
@@ -112,26 +112,7 @@ namespace Model
             returnData = dataValue[0] * MAXBYTE + dataValue[1];
             return returnData;
         }
-        public int ReadModbus(Int16 registerStartAddress, Boolean signedValue)
-        {
-            // For Int16 data (Single register)
-            int returnData;
 
-            if (registerStartAddress == 0)
-            {
-                throw new Exception("Illegal register address 0");
-            }
-
-            byte slaveAddress = 0x1;
-            ushort startAddress = (ushort)(registerStartAddress - 1);
-
-            ushort[] dataValue = new ushort[1];
-            dataValue = master.ReadHoldingRegisters(slaveAddress, startAddress, 1);
-
-            // Convert dataValue (ushort[]) to int
-            returnData = dataValue[0];
-            return returnData;
-        }
 
         public ushort[] ReadModbus(ushort startAdress, ushort registerLength)
         {
