@@ -107,9 +107,14 @@ namespace Model
             if (signedValue && dataValue[0] >= 32768)
             {
                 returnData = -(MAXBYTE -1 - dataValue[0]) * MAXBYTE - (MAXBYTE -1 - dataValue[1]) - 1;
-                return returnData;
             }
-            returnData = dataValue[0] * MAXBYTE + dataValue[1];
+            else if (nrOfRegisters == 1)
+            {
+                returnData = dataValue[0];
+            }
+            else {
+                returnData = dataValue[0] * MAXBYTE + dataValue[1];
+            }
             return returnData;
         }
 

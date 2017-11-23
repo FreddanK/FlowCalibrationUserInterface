@@ -424,28 +424,32 @@ namespace Model
            
             static void Main(string[] args)
             {
-                
-                
                 ModbusCommunication modCom = new ModbusCommunication();
                 modCom.RunModbus(Register.Mode,(Int16)1);
                 modCom.RunModbus(Register.TargetInput,0);
                 modCom.RunModbus(Register.Mode,(Int16)21);
 
-                modCom.RunModbus(Register.TargetInput,0);
-                modCom.RunModbus(Register.Mode,(Int16)33);
-                modCom.RunModbus(Register.TargetInput,100);
-                Thread.Sleep(2000);
-                modCom.RunModbus(Register.TargetInput,2000);
-                Thread.Sleep(2000);
-                modCom.RunModbus(Register.TargetInput,8000);
-                Thread.Sleep(2000);
-                modCom.RunModbus(Register.TargetInput,30000);
-                Thread.Sleep(2000);
-                modCom.RunModbus(Register.TargetInput,2000);
-                Thread.Sleep(2000);
-                modCom.RunModbus(Register.TargetInput,0);
-                modCom.RunModbus(Register.Mode,(Int16)1);
+                //modCom.RunModbus(Register.TargetInput,0);
+                //modCom.RunModbus(Register.Mode,(Int16)33);
+                //modCom.RunModbus(Register.TargetInput,100);
+                //Thread.Sleep(2000);
+                //modCom.RunModbus(Register.TargetInput,2000);
+                //Thread.Sleep(2000);
+                //modCom.RunModbus(Register.TargetInput,8000);
+                //Thread.Sleep(2000);
+                //modCom.RunModbus(Register.TargetInput,30000);
+                //Thread.Sleep(2000);
+                //modCom.RunModbus(Register.TargetInput,2000);
+                //Thread.Sleep(2000);
+                //modCom.RunModbus(Register.TargetInput,0);
+                //modCom.RunModbus(Register.Mode,(Int16)1);
 
+                MotorControl motCon = new MotorControl(modCom);
+
+                List<Int32> ticks = new List<Int32>() {0,4000,8000,16000,20000,16000,8000,4000,0,-2000,0};
+                List<double> times = new List<double>() {0,1,2,3,4,5,6,7,8,9,10};
+
+                motCon.RunTickSequence( ticks, times);
 
                 Console.ReadLine();
                 modCom.EndModbus();

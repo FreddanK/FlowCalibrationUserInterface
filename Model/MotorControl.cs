@@ -6,23 +6,21 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 
 namespace Model
-{   
-
-    class MotorControl
+{  
+    public class MotorControl
 	// MotorControl - Controls the motor with a list of position and times or velocity and times. 
 	//     		      Can convert from position to ticks or velocity to ticks per second and the other way.
 	//				  Implements homing sequence.
     //                Needs to have the pulley wheel size as parameter.
     //                Assumes to get an initialized modbus object when created
     {
-        Double PulleyDiameter { get; set; }
         ModbusCommunication ModCom { get; set; }
 
         List<Double> RecordedTimes { get; set; }
         List<Double> RecordedPositions { get; set; }
         List<Double> RecordedVelocities { get; set; }
 
-        static class Hardware
+        struct Hardware
         {
             //DEFINE HARDWARE PARAMETERS
             public const int Pitch = 32; // [mm] of gearwheel
@@ -30,12 +28,11 @@ namespace Model
             public const int VelocityResolution = 16; // [velocity resolution is position resolution / constant]
             public const int TimePerSecond = 2000; // [time register +2000 each second]
         }
-        static class Register
+        struct Register
         {
             // DEFINE REGISTERS 
             // REGISTER: 450/451 (int32)
             public const ushort TargetInput = 450;
-
             // REGISTER: 200/201
             public const ushort Position = 200;
             // REGISTER: 202 
@@ -55,7 +52,7 @@ namespace Model
             // Shutdown (Mode 4)
             public const ushort Mode = 400;
         }
-        static class Mode
+        struct Mode
         {
             public const Int16 PositionRamp = 21;
             public const Int16 SpeedRamp = 33;
@@ -66,8 +63,6 @@ namespace Model
         public MotorControl(ModbusCommunication modCom)
         {
             ModCom = modCom;
-
-            PulleyDiameter = 10; //TODO unit, value?
 
             RecordedTimes = new List<Double>();
             RecordedPositions = new List<Double>();
@@ -130,7 +125,7 @@ namespace Model
             List<int> ticks = new List<int>();
             for (int i = 0; i < positions.Count; i++)
             {
-                ticks[i] = (int)Math.Round(positions[i] * 10 * Hardware.TicksPerRev / Hardware.Pitch);
+                ticks.Add( (int)Math.Round(positions[i] * 10 * Hardware.TicksPerRev / Hardware.Pitch));
             }
             return ticks;
         }
@@ -140,7 +135,7 @@ namespace Model
             List<Double> position = new List<Double>();
             for (int i = 0; i < ticks.Count; i++)
             {
-                position[i] = ticks[i] * Hardware.Pitch / Hardware.TicksPerRev /10;
+                position.Add(ticks[i] * Hardware.Pitch / Hardware.TicksPerRev /10);
             }
             return position;
             
@@ -151,7 +146,7 @@ namespace Model
             List<Double> velocity = new List<Double>();
             for (int i = 0; i < ticksPerSecond.Count; i++)
             {
-                velocity[i] = ticksPerSecond[i] * Hardware.Pitch * Hardware.VelocityResolution/Hardware.TicksPerRev/10;
+                velocity.Add(ticksPerSecond[i] * Hardware.Pitch * Hardware.VelocityResolution/Hardware.TicksPerRev/10);
             }
             return velocity;
         }
@@ -161,7 +156,7 @@ namespace Model
             List<Double> seconds = new List<Double>();
             for (int i = 0; i < time.Count; i++)
             {
-                seconds[i] = time[i] / Hardware.TimePerSecond;
+                seconds.Add( time[i] / Hardware.TimePerSecond);
             }
             return seconds;
         }
