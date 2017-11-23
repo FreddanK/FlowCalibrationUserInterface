@@ -19,6 +19,8 @@ namespace Model
         List<Double> RecordedTimes { get; set; }
         List<Double> RecordedPositions { get; set; }
         List<Double> RecordedVelocities { get; set; }
+        List<Double> RecordedTorques { get; set; }
+        List<Double> RecordedPressures { get; set; }
 
         struct Hardware
         {
@@ -27,6 +29,9 @@ namespace Model
             public const int TicksPerRev = 4096; // [ticks per revolution position data]
             public const int VelocityResolution = 16; // [velocity resolution is position resolution / constant]
             public const int TimePerSecond = 2000; // [time register +2000 each second]
+            public const int MotorTorquePerTorque = 1000; // [motor Torue [mNm] per Torque [Nm]]
+            public const double PressureGain = 1; // [motor Pressure [VDC] to Pressure [?] gain]
+            public const double PressureBias = 0; // [motor Pressure [VDC] to Pressure [?] bias]
         }
         struct Register
         {
@@ -143,6 +148,8 @@ namespace Model
             List<int> MotorRecordedTimes = new List<int>();
             List<int> MotorRecordedPositions = new List<int>();
             List<int> MotorRecordedVelocities = new List<int>();
+            List<int> MotorRecordedTorques = new List<int>();
+            List<int> MotorRecordedPressures = new List<int>();
 
             // Set time = 0
             ModCom.RunModbus(Register.Time, (Int32)0);
@@ -160,6 +167,8 @@ namespace Model
                     MotorRecordedTimes.Add(ModCom.ReadModbus(Register.Time, 2, false));
                     MotorRecordedPositions.Add(ModCom.ReadModbus(Register.Position, 2, true));
                     MotorRecordedVelocities.Add(ModCom.ReadModbus(Register.Speed, 1, false));
+                    MotorRecordedTorques.Add(ModCom.ReadModbus(Register.Torque, 1, false));
+                    MotorRecordedPressures.Add(ModCom.ReadModbus(Register.Pressure, 1, false));
                     i += 1;
                 }
                 
@@ -180,6 +189,8 @@ namespace Model
             RecordedTimes = TimeToSeconds(MotorRecordedTimes);
             RecordedPositions = TickToPosition(MotorRecordedPositions);
             RecordedVelocities = TicksPerSecondToVelocity(MotorRecordedVelocities);
+            RecordedTorques = MotorTorquesToTorques(MotorRecordedTorques);
+            RecordedPressures = MotorPressureToPressure(MotorRecordedPressures);
         }
 
         public void RunTicksToVelocitySequence(List<int> ticksPerSecond, List<double> times)
@@ -275,6 +286,25 @@ namespace Model
                 seconds.Add( time[i] / Hardware.TimePerSecond);
             }
             return seconds;
+        }
+
+        public List<Double> MotorTorquesToTorques(List<int> motorTorques)
+        {
+            List<Double> torques = new List<Double>();
+            for (int i = 0; i < motorTorques.Count; i++)
+            {
+                torques.Add(motorTorques[i] / Hardware.MotorTorquePerTorque);
+            }
+            return torques;
+        }
+        public List<Double> MotorPressureToPressure(List<int> motorPressure)
+        {
+            List<Double> pressure = new List<Double>();
+            for (int i = 0; i < motorPressure.Count; i++)
+            {
+                pressure.Add(motorPressure[i] * Hardware.PressureGain + Hardware.PressureBias);
+            }
+            return pressure;
         }
     }
 }
