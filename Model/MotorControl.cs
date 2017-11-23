@@ -77,7 +77,7 @@ namespace Model
 
         struct EventLogic
         {
-            /*
+            /* Note that only bits 0-3 of Register.EventControl is considered here.
             0    Always      true
             1   =       Equal
             2   !=      Not equal
@@ -96,9 +96,27 @@ namespace Model
             15  Value   Takes data value directly
             */
 
-            public const Int16 GreaterThan = 4;
-            public const Int16 UseValue = 15;
+            // defined in hex form to make it clearer that it's about manipulation of bit 0-3
+            public const Int16 GreaterThan = 0X4000;
+            public const Int16 UseValue = 0X000F;
+            // the final value is composed of different values for different bits. Hardcoded for now
+            public const Int16 HardCodedTemp = 0X400F;
         }
+        public void MotorSafetyInit(ushort MaxTorque)
+        {
+            // Set the max allowed torqe
+            ModCom.RunModbus(Register.EventTrgData, MaxTorque);
+            // Select the Torque as value of interest
+            ModCom.RunModbus(Register.EventTrgReg, Register.Torque);
+            // Select Greater than as event and what to do...
+            // TODO: rewrite this bit manipulation to something less horrible
+            ModCom.RunModbus(Register.EventControl,EventLogic.HardCodedTemp);
+            // Select the mode register as target register for event
+            ModCom.RunModbus(Register.EventDstReg,Register.Mode);
+            // Select MotorOff as response to event.
+            ModCom.RunModbus(Register.EventSrcData,Mode.MotorOff)
+        }
+
         
         public MotorControl(ModbusCommunication modCom)
         {
