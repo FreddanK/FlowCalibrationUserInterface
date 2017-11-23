@@ -13,7 +13,9 @@ namespace Model
 {
     public class ModbusCommunication
     {
-        static IModbusMaster master;
+        public IModbusMaster Master { get; set; }
+
+        const int MAXBYTE = 65536;
 
         public ModbusCommunication()
         {
@@ -33,7 +35,7 @@ namespace Model
         
 		    var adapter = new SerialPortAdapter(serialPort);
             // create modbus master
-            master = ModbusSerialMaster.CreateRtu(adapter);
+            Master = ModbusSerialMaster.CreateRtu(adapter);
 
 		}
 
@@ -46,7 +48,6 @@ namespace Model
                 throw new Exception("Illegal register address 0");
             }
 
-            int MAXBYTE = 65536;
             byte slaveAddress = 0x1;
 
             ushort startAddress = (ushort)(registerStartAddress - 1);
@@ -69,7 +70,7 @@ namespace Model
                 dataUShort[1] = (ushort)data;
             }
             
-            master.WriteMultipleRegisters(slaveAddress, startAddress, dataUShort);
+            Master.WriteMultipleRegisters(slaveAddress, startAddress, dataUShort);
         }
         public void RunModbus(ushort registerStartAddress, Int16 data)
         {
@@ -83,7 +84,7 @@ namespace Model
             ushort startAddress = (ushort)(registerStartAddress - 1);
 
             ushort[] dataUShort = new ushort[] { (ushort)data };
-            master.WriteMultipleRegisters(slaveAddress, startAddress, dataUShort);
+            Master.WriteMultipleRegisters(slaveAddress, startAddress, dataUShort);
         }
 
         public int ReadModbus(ushort registerStartAddress, ushort nrOfRegisters, Boolean signedValue)
@@ -96,12 +97,11 @@ namespace Model
                 throw new Exception("Illegal register address 0");
             }
 
-            int MAXBYTE = 65536;
             byte slaveAddress = 0x1;
             ushort startAddress = (ushort)(registerStartAddress - 1);
 
             ushort[] dataValue = new ushort[nrOfRegisters];
-            dataValue = master.ReadHoldingRegisters(slaveAddress, startAddress, nrOfRegisters);
+            dataValue = Master.ReadHoldingRegisters(slaveAddress, startAddress, nrOfRegisters);
             
             // Convert dataValue (ushort[]) to int
             if (signedValue && dataValue[0] >= 32768)
@@ -113,19 +113,9 @@ namespace Model
             return returnData;
         }
 
-
-        public ushort[] ReadModbus(ushort startAdress, ushort registerLength)
-        {
-            byte slaveAddress = 0x1;
-            ushort[] data = master.ReadHoldingRegisters(slaveAddress,startAdress, registerLength);
-
-            return data;
-
-        }
-
         public void EndModbus()
         {
-            master.Dispose();
+            Master.Dispose();
         }
     }
 }
