@@ -34,28 +34,31 @@ namespace Model
         {
             // DEFINE REGISTERS 
             // REGISTER: 450/451 (int32)
-            public const Int32 TargetInput = 450;
+            public const ushort TargetInput = 450;
             // REGISTER: 200/201 (int32)
-            public const Int32 Position = 200;
+            public const ushort Position = 200;
             // REGISTER: 202 (int16)
-            public const Int16 Speed = 202;
+            public const ushort Speed = 202;
             // REGISTER: 203 (int16)
-            public const Int16 Torque = 203;
+            public const ushort Torque = 203;
             // REGISTER: 420/421 (int32)
-            public const Int32 Time = 420;
+            public const ushort Time = 420;
             // REGISTER: 170-173 (int16)
-            public const Int16 Pressure = 170;
+            public const ushort Pressure = 170;
             // REGISTER: 353 (int16)
-            public const Int16 Acceleration = 353;
+            public const ushort Acceleration = 353;
             // REGISTER: 354 (int16)
-            public const Int16 Deacceleration = 354;
-            // PositionRamp (Mode 21): Closed control of position with ramp control.
-            // SpeedRamp (Mode 33): Speed control mode with ramp control.
-            // Shutdown (Mode 4)
-            public const Int16 PositionRamp = 400;
-            public const Int16 SpeedRamp = 400;
-            public const Int16 Shutdown = 400;
-            public const Int16 Mode = 400;
+            public const ushort Deacceleration = 354;
+			// PositionRamp (Mode 21): Closed control of position with ramp control.
+			// SpeedRamp (Mode 33): Speed control mode with ramp control.
+			// Shutdown (Mode 4)
+			public const ushort Mode = 400;
+
+            public const Int16 ModePositionRamp = 21;
+            public const Int16 ModeSpeedRamp = 33;
+            public const Int16 ModeShutdown = 4;
+            public const Int16 ModeMotorOff = 0;
+
         }
 
         public MotorControl(ModbusCommunication modCom)
