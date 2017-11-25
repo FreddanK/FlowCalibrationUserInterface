@@ -85,8 +85,7 @@ namespace FlowCalibration
                 values.Add(point.Y);
             }
 
-            List<int> tickValues = motorControl.PositionToTick(values);
-            motorControl.RunTickSequence(tickValues, times);
+            motorControl.RunWithVelocity(values, times);
 
             // Backend.RunFlowValues(times,values);
         }

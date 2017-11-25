@@ -451,7 +451,7 @@ namespace Model
                 List<Int32> ticks = new List<Int32>() {0,2000,4000,8000,4000,500,-2000,-2000,0};
                 List<double> times = new List<double>() {0,1,2,3,4,5,6,7,8};
 
-                motCon.RunTicksToVelocitySequence(ticks, times);
+                motCon.RunTickSequence(ticks, times, Mode.SpeedRamp);
                 //motCon.RunTickSequence(ticks, times);
 
                 Console.ReadLine();
