@@ -60,14 +60,19 @@ namespace Model
             // 20 possible events. Mapped by increase of 20.... I guess
             // goes from 680 to 699
             public const ushort EventControl = 680;
+            // Event Target Register 
             // goes from 700 to 719
             public const ushort EventTrgReg = 700;
+            // Event Target Data
             // goes from 720 to 739
             public const ushort EventTrgData = 720;
+            // Event Source Register
             // goes from 740 to 759
             public const ushort EventSrcReg = 740;
+            // Event Source Data
 			// goes from 760 to 779
 			public const ushort EventSrcData = 760;
+            // Event Destination Register
 			// goes from 780 to 799
 			public const ushort EventDstReg = 780;
 
@@ -107,20 +112,43 @@ namespace Model
             // the final value is composed of different values for different bits. Hardcoded for now
             public const Int16 HardCodedTemp = 0X400F;
         }
+
+
         public void MotorSafetyInit(Int16 MaxTorque)
         {
+            // Event Trigger
             // Set the max allowed torqe
             ModCom.RunModbus(Register.EventTrgData, MaxTorque);
             // Select the Torque as value of interest
-            // note that registers that are placed in registers need to be shifted by -1
-            ModCom.RunModbus(Register.EventTrgReg, Register.Position -1);
+            ModCom.RunModbus(Register.EventTrgReg, Register.Position);
             // Select Greater than as event and what to do...
             // TODO: rewrite this bit manipulation to something less horrible
-            ModCom.RunModbus(Register.EventControl,EventLogic.HardCodedTemp);
+            // 0X400F should be greater than, use value directly
+            ModCom.RunModbus(Register.EventControl, EventLogic.HardCodedTemp);
+
+            // Event Execution
             // Select the mode register as target register for event
-            ModCom.RunModbus(Register.EventDstReg,Register.Mode -1);
+            ModCom.RunModbus(Register.EventDstReg, Register.Mode);
             // Select MotorOff as response to event.
             ModCom.RunModbus(Register.EventSrcData, Mode.MotorOff);
+        }
+
+        public void CreateEvent(ushort EventNr,
+                                Int16 TrgData,
+                                ushort TrgReg,
+                                Int16 EventLogic,
+                                ushort DstRegister,
+                                Int16 SrcData)
+        {
+            // Compares TrgReg with TrgData, if = 1 according to 0-3 bits of
+            // Eventlogic, write SrcData to DstRegister. (if EventLogic = 0X---F)
+            // note: EventNr zero indexed
+            ModCom.RunModbus((ushort)(Register.EventTrgData + EventNr), TrgData);
+            ModCom.RunModbus((ushort)(Register.EventTrgReg + EventNr), TrgReg);
+            ModCom.RunModbus((ushort)(Register.EventControl + EventNr), EventLogic);
+            ModCom.RunModbus((ushort)(Register.EventDstReg + EventNr), DstRegister);
+            ModCom.RunModbus((ushort)(Register.EventSrcData + EventNr), SrcData);
+
         }
 
         
