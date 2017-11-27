@@ -37,6 +37,13 @@ namespace Model
             // create modbus master
             Master = ModbusSerialMaster.CreateRtu(adapter);
 
+			// REGISTER: 204: Max torque allowed
+			const ushort MotorTorqueMax = 204;
+			if ((ReadModbus(MotorTorqueMax, 1, false)) > 100)
+			{
+                Master.Dispose();
+				throw new Exception("Maximum torque set too high for safe operation");
+			}
 		}
 
         public void RunModbus(ushort registerStartAddress, Int32 data)

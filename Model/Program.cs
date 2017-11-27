@@ -43,6 +43,8 @@ namespace Model
             public const ushort SpeedRamp = 400;
             public const ushort Shutdown = 400;
             public const ushort Mode = 400;
+            public const ushort MotorTorqueMax = 204;
+            public const ushort Status = 410;
         }
         static class Hardware
         {
@@ -451,20 +453,26 @@ namespace Model
                 int currentTorque = modCom.ReadModbus(Register.Torque, (ushort) 1, false);
                 Console.WriteLine("current Torque:");
                 Console.WriteLine(currentTorque);
-                motCon.CreateEvent((ushort) 0,
-                                   (Int16) (100),
-                                   (Int16) (Register.Torque),
-                                   (ushort) 0XF004,
-                                   (Int16) (Register.Mode),
-                                   (Int16) 0);
 
-                List<Int32> ticks = new List<Int32>() {0,2000,4000,8000,4000,500,-2000,-2000,0};
+                motCon.CreateEvent((ushort)0,
+                                   (Int16)(0B000000000100000), //bitmask to get torque from status register
+                                   (Int16)(Register.Status),
+                                   (ushort)0XF007, // and between bitmask and status register
+                                   (Int16)(Register.Mode),
+                                   (ushort)0,
+                                   (Int16) 0); //no source register
+                
+                modCom.RunModbus(Register.MotorTorqueMax,(Int16) 110);
+
+                List<Int32> ticks = new List<Int32>() { 0, 100, 1000, 2000, 3000, 2000, 1000, 100, 0 };
+                //List<Int32> ticks = new List<Int32>() {0,2000,4000,8000,4000,500,-2000,-2000,0};
                 List<double> times = new List<double>() {0,1,2,3,4,5,6,7,8};
 
-                motCon.RunTickSequence(ticks, times, Mode.SpeedRamp);
+                motCon.RunTickSequence(ticks, times, Mode.PositionRamp);
+                Console.WriteLine("run sequence done");
                 //motCon.RunTickSequence(ticks, times);
 
-                Console.ReadLine();
+                //Console.ReadLine();
                 modCom.EndModbus();
 
             }

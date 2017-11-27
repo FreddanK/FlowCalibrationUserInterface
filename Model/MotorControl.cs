@@ -56,6 +56,10 @@ namespace Model
             // SpeedRamp (Mode 33): Speed control mode with ramp control.
             // Shutdown (Mode 4)
             public const ushort Mode = 400;
+            // REGISTER: 204: Max torque allowed
+			public const ushort MotorTorqueMax = 204;
+            // REGISTER: 410: current Status
+			public const ushort Status = 410;
 
             // 20 possible events. Mapped by increase of 20.... I guess
             // goes from 680 to 699
@@ -111,7 +115,7 @@ namespace Model
             public const Int16 GreaterThan = 0X4000;
             public const Int16 UseValue = 0X000F;
             // the final value is composed of different values for different bits. Hardcoded for now
-            public const Int16 HardCodedTemp = 0X400F;
+            public const ushort HardCodedTemp = 0XF007;
         }
 
         public void CreateEvent(ushort EventNr,
@@ -119,7 +123,8 @@ namespace Model
                                 Int16 TrgReg,
                                 ushort EventLogic,
                                 Int16 DstRegister,
-                                Int16 SrcData)
+                                ushort SrcData,
+                                Int16 SrcRegister)
         {
             /* (ushort) EventNr, nr between 0-19 
              * (Int16)  TrgData, Value that is used for event triggers
@@ -127,13 +132,15 @@ namespace Model
              * (ushort) EventLogic, 0XA--B where A is how the event should behave
              * and B is how the event should be triggered
              * (Int16) DstRegister, destination register
-             * (Int16) SrcData, what should be written to the destination register
+             * (ushort) SrcData, what should be written to the destination register
+             * (Int16) SrcRegister, combined with SrcData
              */
             ModCom.RunModbus((ushort)(Register.EventTrgData + EventNr), TrgData);
             ModCom.RunModbus((ushort)(Register.EventTrgReg + EventNr), TrgReg);
             ModCom.RunModbus((ushort)(Register.EventControl + EventNr), EventLogic);
             ModCom.RunModbus((ushort)(Register.EventDstReg + EventNr), DstRegister);
             ModCom.RunModbus((ushort)(Register.EventSrcData + EventNr), SrcData);
+            ModCom.RunModbus((ushort)(Register.EventSrcReg + EventNr),SrcRegister);
 
         }
 
