@@ -422,7 +422,7 @@ namespace Model
                 return acc;
             }
            
-            static void Main(string[] args)
+            public static void Main(string[] args)
             {
                 ModbusCommunication modCom = new ModbusCommunication();
                 modCom.RunModbus(Register.Mode,(Int16)1);
@@ -447,7 +447,16 @@ namespace Model
                 MotorControl motCon = new MotorControl(modCom);
 
                 // test of event safety function
-                motCon.MotorSafetyInit(1000);
+                int currentSpeed = modCom.ReadModbus(Register.Speed, (ushort) 1, false);
+                Console.WriteLine("current speed:");
+                Console.WriteLine(currentSpeed);
+                motCon.CreateEvent((ushort) 0,
+                                   (Int16) (3000),
+                                   (Int16) (Register.Speed),
+                                   (ushort) 0XF004,
+                                   (Int16) (Register.Mode),
+                                   (Int16) 0);
+                
                 List<Int32> ticks = new List<Int32>() {0,2000,4000,8000,4000,500,-2000,-2000,0};
                 List<double> times = new List<double>() {0,1,2,3,4,5,6,7,8};
 

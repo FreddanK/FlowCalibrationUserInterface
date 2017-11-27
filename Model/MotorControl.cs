@@ -113,36 +113,21 @@ namespace Model
             public const Int16 HardCodedTemp = 0X400F;
         }
 
-
-        public void MotorSafetyInit(Int16 MaxTorque)
-        {
-            // Event Trigger
-            // Set the max allowed torqe
-            ModCom.RunModbus(Register.EventTrgData, MaxTorque);
-            // Select the Torque as value of interest
-            ModCom.RunModbus(Register.EventTrgReg, Register.Position);
-            // Select Greater than as event and what to do...
-            // TODO: rewrite this bit manipulation to something less horrible
-            // 0X400F should be greater than, use value directly
-            ModCom.RunModbus(Register.EventControl, EventLogic.HardCodedTemp);
-
-            // Event Execution
-            // Select the mode register as target register for event
-            ModCom.RunModbus(Register.EventDstReg, Register.Mode);
-            // Select MotorOff as response to event.
-            ModCom.RunModbus(Register.EventSrcData, Mode.MotorOff);
-        }
-
         public void CreateEvent(ushort EventNr,
                                 Int16 TrgData,
-                                ushort TrgReg,
-                                Int16 EventLogic,
-                                ushort DstRegister,
+                                Int16 TrgReg,
+                                ushort EventLogic,
+                                Int16 DstRegister,
                                 Int16 SrcData)
         {
-            // Compares TrgReg with TrgData, if = 1 according to 0-3 bits of
-            // Eventlogic, write SrcData to DstRegister. (if EventLogic = 0X---F)
-            // note: EventNr zero indexed
+            /* (ushort) EventNr, nr between 0-19 
+             * (Int16)  TrgData, Value that is used for event triggers
+             * (Int16)  TrgReg, Register that is read and used to trigger event
+             * (ushort) EventLogic, 0XA--B where A is how the event should behave
+             * and B is how the event should be triggered
+             * (Int16) DstRegister, destination register
+             * (Int16) SrcData, what should be written to the destination register
+             */
             ModCom.RunModbus((ushort)(Register.EventTrgData + EventNr), TrgData);
             ModCom.RunModbus((ushort)(Register.EventTrgReg + EventNr), TrgReg);
             ModCom.RunModbus((ushort)(Register.EventControl + EventNr), EventLogic);

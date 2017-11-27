@@ -86,6 +86,21 @@ namespace Model
             ushort[] dataUShort = new ushort[] { (ushort)data };
             Master.WriteMultipleRegisters(slaveAddress, startAddress, dataUShort);
         }
+
+		public void RunModbus(ushort registerStartAddress, ushort data)
+		{
+			// For Int16 data (Single register)
+			if (registerStartAddress == 0)
+			{
+				throw new Exception("Illegal register address 0");
+			}
+
+			byte slaveAddress = 0x1;
+			ushort startAddress = (ushort)(registerStartAddress - 1);
+
+			ushort[] dataUShort = new ushort[] { data };
+			Master.WriteMultipleRegisters(slaveAddress, startAddress, dataUShort);
+		}
   
         public int ReadModbus(ushort registerStartAddress, ushort nrOfRegisters, Boolean signedValue)
         {
