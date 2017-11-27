@@ -83,6 +83,7 @@ namespace Model
             public const Int16 SpeedRamp = 33;
             public const Int16 Shutdown = 4;
             public const Int16 MotorOff = 0;
+            public const Int16 Beep = 60;
         }
 
         struct EventLogic
