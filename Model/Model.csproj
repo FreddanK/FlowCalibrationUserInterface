@@ -49,6 +49,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataExporter.cs" />
     <Compile Include="MotorControl.cs" />
     <Compile Include="ProfileConverter.cs" />
     <Compile Include="Program.cs" />
