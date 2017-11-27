@@ -63,7 +63,7 @@ namespace Model
         }
 
         //Data from Frontend to Backend
-        
+
         public class Backend
         {
             struct MeasurementData
@@ -180,31 +180,35 @@ namespace Model
                 return p;
             }
 
-        
+
             // SEND & RECEIVE DATA
-            static List<double> SendReceiveData(List<double> targetvalues, List<double> time, int writeRegister, int readRegister){
+            static List<double> SendReceiveData(List<double> targetvalues, List<double> time, int writeRegister, int readRegister)
+            {
                 // Send targetvalues to register "writeRegister" at specified times.
                 // reads data from "readRegister"
-            
+
 
                 // abort if lists of different lengths
-                if (targetvalues.Count() != time.Count()){
-                    
+                if (targetvalues.Count() != time.Count())
+                {
+
                     throw new Exception("Input lists not of equal length");
                 }
 
-                List <double> motorData = new List<double>(); // save data from motor
+                List<double> motorData = new List<double>(); // save data from motor
 
                 Stopwatch stopWatch = new Stopwatch();
                 Console.WriteLine("time: 0s");
-                WriteToRegister(writeRegister,targetvalues[0]); //write initial target
+                WriteToRegister(writeRegister, targetvalues[0]); //write initial target
                 motorData.Add(ReadFromRegister(readRegister));  //read initial motor data
 
                 int i = 1;
                 stopWatch.Start();
-                while (i < targetvalues.Count()){
-                    
-                    if (time[i] <= stopWatch.Elapsed.TotalSeconds){ // If more time have elapsed than time[i]
+                while (i < targetvalues.Count())
+                {
+
+                    if (time[i] <= stopWatch.Elapsed.TotalSeconds)
+                    { // If more time have elapsed than time[i]
                         Console.WriteLine("time: {0}s", stopWatch.Elapsed.TotalSeconds);
                         WriteToRegister(writeRegister, targetvalues[i]); // write data
                         motorData.Add(ReadFromRegister(readRegister)); // read data
@@ -213,7 +217,8 @@ namespace Model
 
                     // in case of...
                     double overtime = 30;
-                    if (stopWatch.Elapsed.TotalSeconds > overtime) {
+                    if (stopWatch.Elapsed.TotalSeconds > overtime)
+                    {
                         Console.WriteLine("SendTagetData says: something is wrong");
                         stopWatch.Stop();
                         break;
@@ -223,7 +228,7 @@ namespace Model
                 return motorData;
             }
 
-            static Tuple<List<double>, List<double>> SendReceiveData(List<double> targetvalues,List<double> time, int writeRegister, int readRegister1, int readRegister2)
+            static Tuple<List<double>, List<double>> SendReceiveData(List<double> targetvalues, List<double> time, int writeRegister, int readRegister1, int readRegister2)
             {
                 // Send targetvalues to register "writeRegister" at specified times.
                 // reads data from "readRegister"
@@ -362,7 +367,7 @@ namespace Model
                 // flow (ml/s)
                 for (int i = 1; i <= flow.Count; i++)
                 {
-                    flow[i-1] = FlowToMotorSpeed(flow[i-1]);
+                    flow[i - 1] = FlowToMotorSpeed(flow[i - 1]);
                 }
                 return flow;
             }
@@ -381,16 +386,16 @@ namespace Model
 
             static void WriteToRegister(int registerindex, double data)
             {
-				// Writes data [data] in register [registerindex]
-				//WRITE DATA TO INDEX
+                // Writes data [data] in register [registerindex]
+                //WRITE DATA TO INDEX
 
-				//How to cast from double to ushort[] ?
+                //How to cast from double to ushort[] ?
                 // if the double can be represented by a Int32 this should work
                 // the largest value we ever need to write to a register is int32
                 //int intdata = (int) data;
                 //ushort[] m = new ushort[2];
-				//m[0] = (ushort)intdata;
-				//m[1] = (ushort)(intdata >> 16);
+                //m[0] = (ushort)intdata;
+                //m[1] = (ushort)(intdata >> 16);
 
                 //ModbusCommunication.RunModbus((ushort)registerindex, m);
                 //Console.WriteLine("{0} written to register {1}",data,registerindex);
@@ -424,13 +429,13 @@ namespace Model
                 double acc = (vt1 - vt0) / (t1 - t0);
                 return acc;
             }
-           
+
             public static void Main(string[] args)
             {
                 ModbusCommunication modCom = new ModbusCommunication();
-                modCom.RunModbus(Register.Mode,(Int16)1);
-                modCom.RunModbus(Register.TargetInput,0);
-                modCom.RunModbus(Register.Mode,(Int16)21);
+                modCom.RunModbus(Register.Mode, (Int16)1);
+                modCom.RunModbus(Register.TargetInput, 0);
+                modCom.RunModbus(Register.Mode, (Int16)21);
 
                 //modCom.RunModbus(Register.TargetInput,0);
                 //modCom.RunModbus(Register.Mode,(Int16)33);
@@ -450,7 +455,7 @@ namespace Model
                 MotorControl motCon = new MotorControl(modCom);
 
                 // test of event safety function
-                int currentTorque = modCom.ReadModbus(Register.Torque, (ushort) 1, false);
+                int currentTorque = modCom.ReadModbus(Register.Torque, (ushort)1, false);
                 Console.WriteLine("current Torque:");
                 Console.WriteLine(currentTorque);
 
@@ -460,18 +465,16 @@ namespace Model
                                    (ushort)0XF007, // and between bitmask and status register
                                    (Int16)(Register.Mode),
                                    (ushort)0,
-                                   (Int16) 0); //no source register
-                
-                modCom.RunModbus(Register.MotorTorqueMax,(Int16) 110);
+                                   (Int16)0); //no source register
+
+                modCom.RunModbus(Register.MotorTorqueMax, (Int16)100);
 
                 List<Int32> ticks = new List<Int32>() { 0, 100, 1000, 2000, 3000, 2000, 1000, 100, 0 };
                 //List<Int32> ticks = new List<Int32>() {0,2000,4000,8000,4000,500,-2000,-2000,0};
-                List<double> times = new List<double>() {0,1,2,3,4,5,6,7,8};
+                List<double> times = new List<double>() { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 
-                motCon.RunTickSequence(ticks, times, Mode.PositionRamp);
-                Console.WriteLine("run sequence done");
-                //motCon.RunTickSequence(ticks, times);
-
+                //motCon.RunTickSequence(ticks, times, Mode.PositionRamp);
+                motCon.ManualControl();
                 //Console.ReadLine();
                 modCom.EndModbus();
 

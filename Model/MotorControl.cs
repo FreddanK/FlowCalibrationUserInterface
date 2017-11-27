@@ -110,12 +110,6 @@ namespace Model
             14  /       Divide
             15  Value   Takes data value directly
             */
-
-            // defined in hex form to make it clearer that it's about manipulation of bit 0-3
-            public const Int16 GreaterThan = 0X4000;
-            public const Int16 UseValue = 0X000F;
-            // the final value is composed of different values for different bits. Hardcoded for now
-            public const ushort HardCodedTemp = 0XF007;
         }
 
         public void CreateEvent(ushort EventNr,
@@ -303,6 +297,39 @@ namespace Model
                 pressure.Add(motorPressure[i] * Hardware.PressureGain + Hardware.PressureBias);
             }
             return pressure;
+        }
+
+        public void ManualControl()
+        {
+            // Allows for small manual corrections of position using the motor
+            Console.WriteLine("Manual control active");
+			Console.WriteLine("Press enter to exit, + to increase and - to decrease position");
+			int CurrentPosition = ModCom.ReadModbus(Register.Position, 2, true);
+			int LastPosition = CurrentPosition;
+			ConsoleKeyInfo input = new ConsoleKeyInfo();
+
+			while (Console.ReadKey().Key != ConsoleKey.Enter)
+			{
+				input = Console.ReadKey(true);
+
+				if (input.KeyChar == '+')
+				{
+					CurrentPosition = CurrentPosition + 50;
+					Console.WriteLine("position increased");
+				}
+				if (input.KeyChar == '-')
+				{
+					CurrentPosition = CurrentPosition - 50;
+					Console.WriteLine("position decreased");
+				}
+				if (CurrentPosition != LastPosition)
+				{
+					ModCom.RunModbus(Register.TargetInput, CurrentPosition);
+					LastPosition = CurrentPosition;
+				}
+
+			}
+			Console.WriteLine("Exiting manual control");
         }
     }
 }
