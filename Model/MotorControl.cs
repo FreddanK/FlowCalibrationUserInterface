@@ -245,7 +245,7 @@ namespace Model
             for (int i = 0; i < ticks.Count; i++)
             {
                 //TODO this conversion is the same as for position. Check so that it is correct.
-                ticks.Add( (int)Math.Round(velocities[i] * 10 * Hardware.TicksPerRev / Hardware.Pitch));
+                ticks.Add( (int)Math.Round(velocities[i] * 10 * Hardware.TicksPerRev / Hardware.Pitch / Hardware.VelocityResolution));
             }
             return ticks;
         }
