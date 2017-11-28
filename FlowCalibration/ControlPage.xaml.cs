@@ -16,6 +16,7 @@ using OxyPlot;
 using OxyPlot.Series;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using Microsoft.Win32;
 
 namespace FlowCalibration
 {
@@ -78,6 +79,26 @@ namespace FlowCalibration
             runThread.Name = "Run servo thread";
             runThread.Start();
             //ViewModel.RunFlowProfile();
+
+        }
+
+        private void LoadProfile_Button_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openDialog = new OpenFileDialog();
+            if( openDialog.ShowDialog() == true)
+            {
+                ViewModel.LoadProfile(openDialog.FileName);
+            }
+
+        }
+
+        private void SaveProfile_Button_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveDialog = new SaveFileDialog();
+            if( saveDialog.ShowDialog() == true )
+            {
+                ViewModel.SaveProfile(saveDialog.FileName);
+            }
 
         }
     }

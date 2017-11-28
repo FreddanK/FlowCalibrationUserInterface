@@ -40,7 +40,9 @@ namespace FlowCalibration
 
             for (Double x = 0; x <= period*repeat; x += samplingInterval)
             {
+                x = Math.Round(x, 4);
                 Double y = mathFunction(x, amplitude, period);
+                y = Math.Round(y, 4);
                 points.Add(new DataPoint(x, y));
             }
 

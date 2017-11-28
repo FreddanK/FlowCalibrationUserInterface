@@ -78,7 +78,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="2*"/>
-                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="3*"/>
                     </Grid.RowDefinitions>
                     <StackPanel>
                         <TextBlock Text="Data Control" Style="{StaticResource largeText}" HorizontalAlignment="Center"/>
@@ -96,14 +96,20 @@
                         <TextBox Name="Repeat_TextBox" Text="{Binding Repeat}" Style="{StaticResource textBox}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
                     </StackPanel>
 
-                    <ListView Grid.Row="2" Name="DataPointsListView" Style="{StaticResource listView}"  Margin="20" ItemsSource="{Binding ControlFlowPoints}">
+                    <!--<ListView Grid.Row="2" Name="DataPointsListView" Style="{StaticResource listView}"  Margin="20" ItemsSource="{Binding ControlFlowPoints}">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Time" DisplayMemberBinding="{Binding X}" Width="80"/>
                                 <GridViewColumn Header="Flow" DisplayMemberBinding="{Binding Y}" Width="80"/>
                             </GridView>
                         </ListView.View>
-                    </ListView>
+                    </ListView>-->
+                    <DataGrid Grid.Row="2" Name="Points_DataGrid" Margin="20 0" ItemsSource="{Binding ControlFlowPoints}" AutoGenerateColumns="False" IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Time (s)" Binding="{Binding X}"/>
+                            <DataGridTextColumn Header="Flow (ml/s)" Binding="{Binding Y}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
                 </Grid>
                 <Grid Grid.Column="1">
                     <Grid.RowDefinitions>
@@ -116,8 +122,8 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Name="LoadProfile_Button" Content="Load Profile" Style="{StaticResource smallButton}" Margin="0,20,10,0"/>
-                        <Button Name="SaveProfile_Button" Content="Save Profile" Style="{StaticResource smallButton}" Margin="0,20,10,0"/>
+                        <Button Name="LoadProfile_Button" Content="Load Profile"  Click="LoadProfile_Button_Click" Style="{StaticResource smallButton}" Margin="0,20,10,0"/>
+                        <Button Name="SaveProfile_Button" Content="Save Profile" Click="SaveProfile_Button_Click" Style="{StaticResource smallButton}" Margin="0,20,10,0"/>
                     </StackPanel>
 
                     <oxy:Plot Grid.Row="1" Grid.ColumnSpan="2">

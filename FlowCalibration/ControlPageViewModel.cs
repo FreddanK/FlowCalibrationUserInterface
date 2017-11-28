@@ -7,6 +7,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Windows.Data;
 
 namespace FlowCalibration
 {
@@ -19,7 +21,7 @@ namespace FlowCalibration
         public ObservableCollection<DataPoint> ControlFlowPoints { get; private set; }
 
         public ObservableCollection<String> FlowProfileNames { get; private set; }
-        
+
         public String CurrentProfileName { get; set; }
 
         public Double Amplitude { get; set; }
@@ -38,7 +40,6 @@ namespace FlowCalibration
                 "Sine", "Square", "Triangle", "Ramp", "Peaks", "Custom"
             };
 
-
             FunctionSeries points1 = new FunctionSeries(Math.Cosh, 0, 3, 0.1, "Flow (ml/s)");
             FunctionSeries points2 = new FunctionSeries(Math.Sinh, 0, 3, 0.1, "Volume (ml)");
 
@@ -55,8 +56,7 @@ namespace FlowCalibration
             Repeat = 1;
             R = 1;
 
-            modCom = new ModbusCommunication();
-            motorControl = new MotorControl(modCom);
+
         }
 
         public void UpdateProfile()
@@ -86,8 +86,42 @@ namespace FlowCalibration
             }
 
             motorControl.RunWithVelocity(values, times);
+        }
 
-            // Backend.RunFlowValues(times,values);
+        public void InitializeMotor()
+        {
+            modCom = new ModbusCommunication();
+            motorControl = new MotorControl(modCom);
+        }
+
+        public void SaveProfile(String filePath)
+        {
+            List<Double> times = new List<Double>();
+            List<Double> values = new List<Double>();
+
+            foreach (DataPoint point in ControlFlowPoints)
+            {
+                times.Add(point.X);
+                values.Add(point.Y);
+            }
+            DataExporter.SaveTimeAndValuesToCsv(times, values, filePath);
+        }
+
+        public void LoadProfile(String filePath)
+        {
+            List<Double> times = new List<Double>();
+            List<Double> values = new List<Double>();
+
+            DataExporter.LoadTimeAndValuesFromCsv(times, values, filePath);
+
+            List<DataPoint> dataPoints = new List<DataPoint>();
+
+            for(int i=0; i<values.Count(); i++)
+            {
+                dataPoints.Add(new DataPoint(times[i], values[i]));
+            }
+
+            UpdateObservableCollectionFromIList(ControlFlowPoints, dataPoints);
         }
     }
 }
