@@ -8,6 +8,8 @@ using Modbus.Data;
 using Modbus.Device;
 using Modbus.Utility;
 using Modbus.Serial;
+using System.Management;
+using System.Collections.Generic;
 
 namespace Model
 {
@@ -21,7 +23,7 @@ namespace Model
         {
             SerialPort serialPort = new SerialPort()
             {
-                PortName = "/dev/ttyUSB0", //the port is system dependant. Needs a way to pick the right one
+                PortName = getSerialPortName(), //the port is system dependant. Needs a way to pick the right one
                 BaudRate = 57600,
                 DataBits = 8,
                 Parity = Parity.Even,
@@ -37,6 +39,21 @@ namespace Model
             // create modbus master
             Master = ModbusSerialMaster.CreateRtu(adapter);
 		}
+
+        private string getSerialPortName()
+        {
+            //return "/dev/ttyUSB0"; // For Linux
+            string NameOfDevice = "Moxa USB Serial Port";
+            foreach (COMPortInfo comPort in COMPortInfo.GetCOMPortsInfo())
+            {
+                if (comPort.Name.Equals(NameOfDevice, StringComparison.Ordinal))
+                {
+                    return comPort.Port;
+                }
+
+            }
+            throw new System.ArgumentException("No device found");
+        }
 
         public void RunModbus(ushort registerStartAddress, Int32 data)
         {
@@ -135,6 +152,69 @@ namespace Model
         public void EndModbus()
         {
             Master.Dispose();
+        }
+    }
+    internal class ProcessConnection
+    {
+
+        public static ConnectionOptions ProcessConnectionOptions()
+        {
+            ConnectionOptions options = new ConnectionOptions();
+            options.Impersonation = ImpersonationLevel.Impersonate;
+            options.Authentication = AuthenticationLevel.Default;
+            options.EnablePrivileges = true;
+            return options;
+        }
+
+        public static ManagementScope ConnectionScope(string machineName, ConnectionOptions options, string path)
+        {
+            ManagementScope connectScope = new ManagementScope();
+            connectScope.Path = new ManagementPath(@"\\" + machineName + path);
+            connectScope.Options = options;
+            connectScope.Connect();
+            return connectScope;
+        }
+    }
+    public class COMPortInfo
+    {
+        public string Name { get; set; }
+        public string Port { get; set; }
+
+        public COMPortInfo() { }
+
+        public static List<COMPortInfo> GetCOMPortsInfo()
+        {
+            List<COMPortInfo> comPortInfoList = new List<COMPortInfo>();
+
+            ConnectionOptions options = ProcessConnection.ProcessConnectionOptions();
+            ManagementScope connectionScope = ProcessConnection.ConnectionScope(Environment.MachineName, options, @"\root\CIMV2");
+
+            ObjectQuery objectQuery = new ObjectQuery("SELECT * FROM Win32_PnPEntity WHERE ConfigManagerErrorCode = 0");
+            ManagementObjectSearcher comPortSearcher = new ManagementObjectSearcher(connectionScope, objectQuery);
+            using (comPortSearcher)
+            {
+                string caption = null;
+                foreach (ManagementObject obj in comPortSearcher.Get())
+                {
+                    if (obj != null)
+                    {
+                        object captionObj = obj["Caption"];
+                        if (captionObj != null)
+                        {
+                            caption = captionObj.ToString();
+                            if (caption.Contains("(COM"))
+                            {
+                                COMPortInfo comPortInfo = new COMPortInfo();
+                                comPortInfo.Port = caption.Substring(caption.LastIndexOf("(COM")).Replace("(", string.Empty).Replace(")",
+                                                                     string.Empty);
+                                comPortInfo.Name = caption.Substring(0, caption.LastIndexOf("(COM") - 1); // -1 to remove space;
+                                comPortInfoList.Add(comPortInfo);
+                            }
+                        }
+                    }
+                }
+            }
+            return comPortInfoList;
         }
     }
 }
