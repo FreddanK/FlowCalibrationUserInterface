@@ -104,7 +104,7 @@
                             </GridView>
                         </ListView.View>
                     </ListView>-->
-                    <DataGrid Grid.Row="2" Name="Points_DataGrid" Margin="20 0" ItemsSource="{Binding ControlFlowPoints}" AutoGenerateColumns="False" IsReadOnly="True">
+                    <DataGrid Grid.Row="2" Name="Points_DataGrid" Margin="20 0" ItemsSource="{Binding Points}" AutoGenerateColumns="False" IsReadOnly="False">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Time (s)" Binding="{Binding X}"/>
                             <DataGridTextColumn Header="Flow (ml/s)" Binding="{Binding Y}"/>
@@ -128,7 +128,7 @@
 
                     <oxy:Plot Grid.Row="1" Grid.ColumnSpan="2">
                         <oxy:Plot.Series>
-                            <oxy:LineSeries ItemsSource="{Binding ControlFlowPoints}"/>
+                            <oxy:StairStepSeries ItemsSource="{Binding ControlFlowPoints}"/>
                         </oxy:Plot.Series> 
                     </oxy:Plot>
 

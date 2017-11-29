@@ -19,6 +19,7 @@ namespace FlowCalibration
         public ObservableCollection<DataPoint> LogVolumePoints { get; private set; }
 
         public ObservableCollection<DataPoint> ControlFlowPoints { get; private set; }
+        public ObservableCollection<Point> Points { get; private set; }
 
         public ObservableCollection<String> FlowProfileNames { get; private set; }
 
@@ -42,7 +43,7 @@ namespace FlowCalibration
 
             FunctionSeries points1 = new FunctionSeries(Math.Cosh, 0, 3, 0.1, "Flow (ml/s)");
             FunctionSeries points2 = new FunctionSeries(Math.Sinh, 0, 3, 0.1, "Volume (ml)");
-
+            Points = new ObservableCollection<Point>();
             ControlFlowPoints = new ObservableCollection<DataPoint>();
             LogFlowPoints = new ObservableCollection<DataPoint>();
             LogVolumePoints = new ObservableCollection<DataPoint>();
@@ -62,7 +63,8 @@ namespace FlowCalibration
         public void UpdateProfile()
         {
             List<DataPoint> points = ProfileGenerator.GetPeriodic(CurrentProfileName, Amplitude, Frequency, SamplingInterval, Repeat);
-            UpdateObservableCollectionFromIList(ControlFlowPoints, points);
+            //UpdateObservableCollectionFromIList(ControlFlowPoints, points);
+            UpdateFlowProfileFromIList(points);
         }
 
         private void UpdateObservableCollectionFromIList(ObservableCollection<DataPoint> observablePoints, IList<DataPoint> pointList)
@@ -71,6 +73,19 @@ namespace FlowCalibration
             foreach(DataPoint point in pointList)
             {
                 observablePoints.Add(point);
+            }
+        }
+
+        private void UpdateFlowProfileFromIList(IList<DataPoint> pointList)
+        {
+            ControlFlowPoints.Clear();
+            Points.Clear();
+            int i = 0;
+            foreach(DataPoint point in pointList)
+            {
+                ControlFlowPoints.Add(point);
+                Points.Add(new Point(point.X, point.Y, i, ControlFlowPoints));
+                i++;
             }
         }
 
@@ -124,4 +139,38 @@ namespace FlowCalibration
             UpdateObservableCollectionFromIList(ControlFlowPoints, dataPoints);
         }
     }
+
+    public class Point
+    {
+        public ObservableCollection<DataPoint> TrackedCollection { get; set; }
+        double y;
+        double x;
+        public Double X
+        {
+            get { return x; }
+            set
+            {
+                x = value;
+                TrackedCollection[Index] = new DataPoint(x, y);
+            }
+        }
+        public Double Y {
+            get { return y; }
+            set
+            {
+                y = value;
+                TrackedCollection[Index] = new DataPoint(x, y);
+            }
+        }
+        public int Index { get; set; }
+
+        public Point(Double x, Double y, int i, ObservableCollection<DataPoint> t)
+        {
+            this.x = x;
+            this.y = y;
+            Index = i;
+            TrackedCollection = t;
+        }
+    }
+
 }
