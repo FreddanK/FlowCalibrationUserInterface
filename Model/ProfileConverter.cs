@@ -39,7 +39,7 @@ namespace Model
         public List<double> FlowToVelocity(List<double> flows)
         {
             List<double> velocity = new List<double>();
-            for (int i = 0; i <= flows.Count()-1; i++){
+            for (int i = 0; i < flows.Count(); i++){
                 velocity.Add(flows[i]/SectionArea);
             }
             return velocity;
@@ -48,8 +48,8 @@ namespace Model
         public List<double> PositionToVolume(List<double> positions)
         {
             List<double> volumes = new List<double>();
-            for (int i = 1; i <= positions.Count()-1; i++){
-                volumes.Add((positions[i]-positions[i-1])*SectionArea);
+            for (int i = 0; i < positions.Count(); i++){
+                volumes.Add(positions[i]*SectionArea);
             }
             return volumes;
         }
@@ -57,8 +57,8 @@ namespace Model
         public List<double> VelocityToFlow(List<double> velocities)
         {
             List<double> flows = new List<double>();
-            for (int i = 1; i <= velocities.Count()-1; i++){
-                flows.Add((velocities[i]-velocities[i-1])*SectionArea);
+            for (int i = 0; i < velocities.Count(); i++){
+                flows.Add(velocities[i]*SectionArea);
             }
             return flows;
         }
@@ -81,6 +81,17 @@ namespace Model
             }
             return primitive;
         }
-       
+
+        public List<Double> PositionToFlow(List<Double> positions, List<Double> times)
+        {
+            List<double> flows = new List<double>();
+            for (int i = 1; i < positions.Count(); i++){
+                Double deltaPosition = positions[i] - positions[i - 1];
+                Double deltaTime = times[i] - times[i - 1];
+                flows.Add((deltaPosition/deltaTime)*SectionArea);
+            }
+
+            return flows;
+        }
     }
 }

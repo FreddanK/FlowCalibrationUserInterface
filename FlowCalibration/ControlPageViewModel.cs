@@ -147,11 +147,12 @@ namespace FlowCalibration
             // Run sequence on motor
             motorControl.RunWithVelocity(values, times);
 
-            List<Double> recordedFlows = ProfileConverter.VelocityToFlow(motorControl.RecordedVelocities);
-            List<Double> recordedVolumes = ProfileConverter.VelocityToFlow(motorControl.RecordedPositions);
+            List<Double> recordedFlows = ProfileConverter.PositionToFlow(motorControl.RecordedPositions, motorControl.RecordedTimes);
+            List<Double> recordedVolumes = ProfileConverter.PositionToVolume(motorControl.RecordedPositions);
+            List<Double> recordedTimes = motorControl.RecordedTimes;
 
-            UpdateObservableCollectionFromLists(LogVolumePoints, motorControl.RecordedTimes, recordedFlows);
-            UpdateObservableCollectionFromLists(LogVolumePoints, motorControl.RecordedTimes, recordedVolumes);
+            UpdateObservableCollectionFromLists(LogFlowPoints, recordedTimes, recordedFlows);
+            UpdateObservableCollectionFromLists(LogVolumePoints, recordedTimes, recordedVolumes);
 
             RecordedProfile = CurrentProfileName;
             RecordedDateTime = DateTime.Now.ToString();

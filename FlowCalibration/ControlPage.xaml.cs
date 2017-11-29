@@ -70,10 +70,10 @@ namespace FlowCalibration
 
         private void Run_Button_Click(object sender, RoutedEventArgs e)
         {
-            Thread runThread = new Thread(ViewModel.RunFlowProfile);
-            runThread.Name = "Run servo thread";
-            runThread.Start();
-            //ViewModel.RunFlowProfile();
+            //Thread runThread = new Thread(ViewModel.RunFlowProfile);
+            //runThread.Name = "Run servo thread";
+            //runThread.Start();
+            ViewModel.RunFlowProfile();
 
         }
 

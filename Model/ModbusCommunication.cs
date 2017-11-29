@@ -86,7 +86,11 @@ namespace Model
                 dataUShort[1] = (ushort)data;
             }
             
-            Master.WriteMultipleRegisters(slaveAddress, startAddress, dataUShort);
+            try
+            {
+                Master.WriteMultipleRegisters(slaveAddress, startAddress, dataUShort);
+            }
+            catch (System.TimeoutException) { }
         }
         public void RunModbus(ushort registerStartAddress, Int16 data)
         {
@@ -100,7 +104,11 @@ namespace Model
             ushort startAddress = (ushort)(registerStartAddress - 1);
 
             ushort[] dataUShort = new ushort[] { (ushort)data };
-            Master.WriteMultipleRegisters(slaveAddress, startAddress, dataUShort);
+            try
+            {
+                Master.WriteMultipleRegisters(slaveAddress, startAddress, dataUShort);
+            }
+            catch (System.TimeoutException) { }
         }
 
 		public void RunModbus(ushort registerStartAddress, ushort data)
@@ -115,7 +123,11 @@ namespace Model
 			ushort startAddress = (ushort)(registerStartAddress - 1);
 
 			ushort[] dataUShort = new ushort[] { data };
-			Master.WriteMultipleRegisters(slaveAddress, startAddress, dataUShort);
+            try
+            {
+                Master.WriteMultipleRegisters(slaveAddress, startAddress, dataUShort);
+            }
+            catch (System.TimeoutException) { }
 		}
   
         public int ReadModbus(ushort registerStartAddress, ushort nrOfRegisters, Boolean signedValue)
@@ -132,7 +144,22 @@ namespace Model
             ushort startAddress = (ushort)(registerStartAddress - 1);
 
             ushort[] dataValue = new ushort[nrOfRegisters];
-            dataValue = Master.ReadHoldingRegisters(slaveAddress, startAddress, nrOfRegisters);
+            try
+            {
+                dataValue = Master.ReadHoldingRegisters(slaveAddress, startAddress, nrOfRegisters);
+            }
+            catch(System.TimeoutException)
+            {
+                if (nrOfRegisters == 1)
+                {
+                    dataValue[0] = 0;
+                }
+                else if (nrOfRegisters == 2)
+                {
+                    dataValue[0] = 0;
+                    dataValue[1] = 0;
+                }
+            }
             
             // Convert dataValue (ushort[]) to int
             if (signedValue && dataValue[0] >= 32768)

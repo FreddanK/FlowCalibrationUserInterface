@@ -25,13 +25,13 @@ namespace Model
         struct Hardware
         {
             //DEFINE HARDWARE PARAMETERS
-            public const int Pitch = 32; // [mm] of gearwheel
-            public const int TicksPerRev = 4096; // [ticks per revolution position data]
-            public const int VelocityResolution = 16; // [velocity resolution is position resolution / constant]
-            public const int TimePerSecond = 2000; // [time register +2000 each second]
-            public const int MotorTorquePerTorque = 1000; // [motor Torue [mNm] per Torque [Nm]]
-            public const double PressureGain = 1; // [motor Pressure [VDC] to Pressure [?] gain]
-            public const double PressureBias = 0; // [motor Pressure [VDC] to Pressure [?] bias]
+            public const Double Pitch = 32; // [mm] of gearwheel
+            public const Double TicksPerRev = 4096; // [ticks per revolution position data]
+            public const Double VelocityResolution = 16; // [velocity resolution is position resolution / constant]
+            public const Double TimePerSecond = 2000; // [time register +2000 each second]
+            public const Double MotorTorquePerTorque = 1000; // [motor Torue [mNm] per Torque [Nm]]
+            public const Double PressureGain = 1; // [motor Pressure [VDC] to Pressure [?] gain]
+            public const Double PressureBias = 0; // [motor Pressure [VDC] to Pressure [?] bias]
         }
         struct Register
         {
@@ -170,8 +170,6 @@ namespace Model
 
             int sequenceLength = ticks.Count();
 
-            // Set mode
-            ModCom.RunModbus(Register.Mode, mode);
 
             Stopwatch stopWatch = new Stopwatch();
 
@@ -182,8 +180,14 @@ namespace Model
             Int32 [] MotorRecordedPressures = new Int32 [sequenceLength];
             Double [] StopwatchRecordedTimes = new Double [sequenceLength];
 
-            //TODO Maybe turn off garbage collection during sequence
 
+            ModCom.RunModbus(Register.Mode, Mode.MotorOff);
+            ModCom.RunModbus(Register.Position, (Int32)0);
+            ModCom.RunModbus(Register.Speed, (Int32)0);
+            ModCom.RunModbus(Register.TargetInput,(Int32)0);
+
+            // Set mode
+            ModCom.RunModbus(Register.Mode, mode);
             // Set time = 0
             ModCom.RunModbus(Register.Time, (Int32)0);
             stopWatch.Start();
@@ -199,8 +203,8 @@ namespace Model
                     // Read values that should be logged
                     MotorRecordedTimes[i] = ModCom.ReadModbus(Register.Time, 2, false);
                     MotorRecordedPositions[i] = ModCom.ReadModbus(Register.Position, 2, true);
-                    MotorRecordedVelocities[i] = ModCom.ReadModbus(Register.Speed, 1, false);
-                    StopwatchRecordedTimes[i] = stopWatch.Elapsed.TotalSeconds;
+                    //MotorRecordedVelocities[i] = ModCom.ReadModbus(Register.Speed, 1, false);
+                    //StopwatchRecordedTimes[i] = stopWatch.Elapsed.TotalSeconds;
                     //MotorRecordedTorques[i] = ModCom.ReadModbus(Register.Torque, 1, false);
                     //MotorRecordedPressures[i] = ModCom.ReadModbus(Register.Pressure, 1, false);
 
@@ -215,8 +219,10 @@ namespace Model
                 //    break;
                 //}
             }
-            // Go to position zero
+            // Set target to zero
             ModCom.RunModbus(Register.TargetInput, (Int32)0);
+
+            ModCom.RunModbus(Register.Mode, Mode.MotorOff);
 
             stopWatch.Stop();
             //TODO if garbage collection was turned off, turn it on here
@@ -242,7 +248,7 @@ namespace Model
         public List<Int32> VelocityToTicksPerSecond(IList<Double> velocities)
         {
             List<Int32> ticks = new List<Int32>();
-            for (int i = 0; i < ticks.Count; i++)
+            for (int i = 0; i < velocities.Count; i++)
             {
                 //TODO this conversion is the same as for position. Check so that it is correct.
                 ticks.Add( (int)Math.Round(velocities[i] * 10 * Hardware.TicksPerRev / Hardware.Pitch / Hardware.VelocityResolution));
@@ -255,7 +261,7 @@ namespace Model
             List<Double> position = new List<Double>();
             for (int i = 0; i < ticks.Count; i++)
             {
-                position.Add(ticks[i] * Hardware.Pitch / Hardware.TicksPerRev /10);
+                position.Add((Double)ticks[i] * Hardware.Pitch / Hardware.TicksPerRev /10);
             }
             return position;
         }
@@ -265,7 +271,7 @@ namespace Model
             List<Double> velocity = new List<Double>();
             for (int i = 0; i < ticksPerSecond.Count; i++)
             {
-                velocity.Add(ticksPerSecond[i] * Hardware.Pitch * Hardware.VelocityResolution/Hardware.TicksPerRev/10);
+                velocity.Add((Double)ticksPerSecond[i] * Hardware.Pitch * Hardware.VelocityResolution/Hardware.TicksPerRev/10);
             }
             return velocity;
         }
@@ -275,7 +281,7 @@ namespace Model
             List<Double> seconds = new List<Double>();
             for (int i = 0; i < time.Count; i++)
             {
-                seconds.Add( time[i] / Hardware.TimePerSecond);
+                seconds.Add( (Double)time[i] / Hardware.TimePerSecond);
             }
             return seconds;
         }
@@ -285,7 +291,7 @@ namespace Model
             List<Double> torques = new List<Double>();
             for (int i = 0; i < motorTorques.Count; i++)
             {
-                torques.Add(motorTorques[i] / Hardware.MotorTorquePerTorque);
+                torques.Add((Double)motorTorques[i] / Hardware.MotorTorquePerTorque);
             }
             return torques;
         }
@@ -294,7 +300,7 @@ namespace Model
             List<Double> pressure = new List<Double>();
             for (int i = 0; i < motorPressure.Count; i++)
             {
-                pressure.Add(motorPressure[i] * Hardware.PressureGain + Hardware.PressureBias);
+                pressure.Add((Double)motorPressure[i] * Hardware.PressureGain + Hardware.PressureBias);
             }
             return pressure;
         }
