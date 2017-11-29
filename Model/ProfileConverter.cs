@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Model
 {
-    class ProfileConverter
+    public class ProfileConverter
 	// ProfileConverter - Contains functions for converting between flow and volume and flow to position and velocity.
 	//					  Needs parameters related to the mechanical construction, syringe diameter                    
     // Units
@@ -15,8 +15,8 @@ namespace Model
     // Flow     [ml/s]
     // Volume   [ml]
     {
-        double SyringeDiameter { get; set; }
-        double SectionArea { get; set; }
+        public double SyringeDiameter { get; set; }
+        public double SectionArea { get; set; }
 
         public ProfileConverter()
         {

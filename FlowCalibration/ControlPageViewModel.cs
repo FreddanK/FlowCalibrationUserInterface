@@ -19,7 +19,7 @@ namespace FlowCalibration
         public ObservableCollection<DataPoint> LogVolumePoints { get; private set; }
 
         public ObservableCollection<DataPoint> ControlFlowPoints { get; private set; }
-        public ObservableCollection<Point> Points { get; private set; }
+        public ObservableCollection<PointTracker> Points { get; private set; }
 
         public ObservableCollection<String> FlowProfileNames { get; private set; }
 
@@ -41,6 +41,7 @@ namespace FlowCalibration
 
         ModbusCommunication modCom;
         MotorControl motorControl;
+        ProfileConverter ProfileConverter { get; set; }
 
         public ControlPageViewModel()
         {
@@ -51,7 +52,7 @@ namespace FlowCalibration
 
             FunctionSeries points1 = new FunctionSeries(Math.Cosh, 0, 3, 0.1, "Flow (ml/s)");
             FunctionSeries points2 = new FunctionSeries(Math.Sinh, 0, 3, 0.1, "Volume (ml)");
-            Points = new ObservableCollection<Point>();
+            Points = new ObservableCollection<PointTracker>();
             ControlFlowPoints = new ObservableCollection<DataPoint>();
             LogFlowPoints = new ObservableCollection<DataPoint>();
             LogVolumePoints = new ObservableCollection<DataPoint>();
@@ -61,14 +62,15 @@ namespace FlowCalibration
             SamplingInterval = 0.1;
             Repeat = 1;
 
-            RecordedProfile = "2012";
-            RecordedDateTime = "2012";
+            RecordedProfile = "";
+            RecordedDateTime = "";
             RecordedMaxTime = 0;
             RecordedMinFlow = 0;
             RecordedMaxFlow = 0;
             RecordedMinVolume = 0;
             RecordedMaxVolume = 0;
 
+            ProfileConverter = new ProfileConverter();
 
         }
 
@@ -88,6 +90,15 @@ namespace FlowCalibration
             }
         }
 
+        private void UpdateObservableCollectionFromLists(ObservableCollection<DataPoint> observablePoints, List<double> times, List<double> values)
+        {
+            observablePoints.Clear();
+            for(int i=0; i<values.Count(); i++)
+            {
+                observablePoints.Add(new DataPoint(times[i], values[i]));
+            }
+        }
+
         private void UpdateFlowProfileFromIList(IList<DataPoint> pointList)
         {
             ControlFlowPoints.Clear();
@@ -96,8 +107,20 @@ namespace FlowCalibration
             foreach(DataPoint point in pointList)
             {
                 ControlFlowPoints.Add(point);
-                Points.Add(new Point(point.X, point.Y, i, ControlFlowPoints));
+                Points.Add(new PointTracker(point.X, point.Y, i, ControlFlowPoints));
                 i++;
+            }
+        }
+
+        private void UpdateFlowProfileFromLists(List<Double> times, List<Double> values)
+        {
+            ControlFlowPoints.Clear();
+            Points.Clear();
+            for(int i=0; i<values.Count(); i++)
+            {
+                DataPoint point = new DataPoint(times[i], values[i]);
+                ControlFlowPoints.Add(point);
+                Points.Add(new PointTracker(point.X, point.Y, i, ControlFlowPoints));
             }
         }
 
@@ -112,10 +135,26 @@ namespace FlowCalibration
                 values.Add(point.Y);
             }
 
+            values = ProfileConverter.FlowToVelocity(values);
+
+            // Run sequence on motor
             motorControl.RunWithVelocity(values, times);
 
+            List<Double> recordedFlows = ProfileConverter.VelocityToFlow(motorControl.RecordedVelocities);
+            List<Double> recordedVolumes = ProfileConverter.VelocityToFlow(motorControl.RecordedPositions);
+
+            UpdateObservableCollectionFromLists(LogVolumePoints, motorControl.RecordedTimes, recordedFlows);
+            UpdateObservableCollectionFromLists(LogVolumePoints, motorControl.RecordedTimes, recordedVolumes);
+
             RecordedProfile = CurrentProfileName;
+            RecordedDateTime = DateTime.Now.ToString();
+            RecordedMaxTime = motorControl.RecordedTimes.Last();
+            RecordedMaxFlow = recordedFlows.Max();
+            RecordedMinFlow = recordedFlows.Min();
+            RecordedMaxVolume = recordedVolumes.Max();
+            RecordedMinVolume = recordedVolumes.Min();
         }
+
 
         public void InitializeMotor()
         {
@@ -143,18 +182,11 @@ namespace FlowCalibration
 
             DataExporter.LoadTimeAndValuesFromCsv(times, values, filePath);
 
-            List<DataPoint> dataPoints = new List<DataPoint>();
-
-            for(int i=0; i<values.Count(); i++)
-            {
-                dataPoints.Add(new DataPoint(times[i], values[i]));
-            }
-
-            UpdateObservableCollectionFromIList(ControlFlowPoints, dataPoints);
+            UpdateFlowProfileFromLists(times, values);
         }
     }
 
-    public class Point
+    public class PointTracker
     {
         public ObservableCollection<DataPoint> TrackedCollection { get; set; }
         double y;
@@ -178,7 +210,7 @@ namespace FlowCalibration
         }
         public int Index { get; set; }
 
-        public Point(Double x, Double y, int i, ObservableCollection<DataPoint> t)
+        public PointTracker(Double x, Double y, int i, ObservableCollection<DataPoint> t)
         {
             this.x = x;
             this.y = y;

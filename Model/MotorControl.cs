@@ -16,11 +16,11 @@ namespace Model
     {
         ModbusCommunication ModCom { get; set; }
 
-        List<Double> RecordedTimes { get; set; }
-        List<Double> RecordedPositions { get; set; }
-        List<Double> RecordedVelocities { get; set; }
-        List<Double> RecordedTorques { get; set; }
-        List<Double> RecordedPressures { get; set; }
+        public List<Double> RecordedTimes { get; set; }
+        public List<Double> RecordedPositions { get; set; }
+        public List<Double> RecordedVelocities { get; set; }
+        public List<Double> RecordedTorques { get; set; }
+        public List<Double> RecordedPressures { get; set; }
 
         struct Hardware
         {
