@@ -19,11 +19,11 @@ namespace Model
 
         const int MAXBYTE = 65536;
 
-        public ModbusCommunication()
+        public ModbusCommunication(String portName)
         {
             SerialPort serialPort = new SerialPort()
             {
-                PortName = getSerialPortName(), //the port is system dependant. Needs a way to pick the right one
+                PortName = portName,
                 BaudRate = 57600,
                 DataBits = 8,
                 Parity = Parity.Even,
@@ -40,7 +40,7 @@ namespace Model
             Master = ModbusSerialMaster.CreateRtu(adapter);
 		}
 
-        private string getSerialPortName()
+        public static string getSerialPortName()
         {
             //return "/dev/ttyUSB0"; // For Linux
             string NameOfDevice = "Moxa USB Serial Port";

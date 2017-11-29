@@ -432,7 +432,8 @@ namespace Model
 
             public static void Main(string[] args)
             {
-                ModbusCommunication modCom = new ModbusCommunication();
+                String portName = ModbusCommunication.getSerialPortName();
+                ModbusCommunication modCom = new ModbusCommunication(portName);
                 modCom.RunModbus(Register.Mode, (Int16)1);
                 modCom.RunModbus(Register.TargetInput, 0);
                 modCom.RunModbus(Register.Mode, (Int16)21);

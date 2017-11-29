@@ -68,11 +68,6 @@ namespace FlowCalibration
 
         }
 
-        private void BaudRates_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
         private void Run_Button_Click(object sender, RoutedEventArgs e)
         {
             Thread runThread = new Thread(ViewModel.RunFlowProfile);
@@ -100,6 +95,15 @@ namespace FlowCalibration
                 ViewModel.SaveProfile(saveDialog.FileName);
             }
 
+        }
+
+        private void Connect_Button_Click(object sender, RoutedEventArgs e)
+        {
+            String portName = COM_port_TextBox.Text;
+            if(!ViewModel.USBConnected)
+            {
+                ViewModel.InitializeMotor(portName);
+            }
         }
     }
 }

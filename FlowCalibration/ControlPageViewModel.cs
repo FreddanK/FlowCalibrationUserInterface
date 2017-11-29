@@ -39,9 +39,12 @@ namespace FlowCalibration
         public Double RecordedMinVolume { get; set; }
         public Double RecordedMaxVolume { get; set; }
 
+        public Boolean USBConnected { get; set; }
+
         ModbusCommunication modCom;
         MotorControl motorControl;
-        ProfileConverter ProfileConverter { get; set; }
+        ProfileConverter ProfileConverter;
+
 
         public ControlPageViewModel()
         {
@@ -71,6 +74,8 @@ namespace FlowCalibration
             RecordedMaxVolume = 0;
 
             ProfileConverter = new ProfileConverter();
+
+            USBConnected = false;
 
         }
 
@@ -126,6 +131,8 @@ namespace FlowCalibration
 
         public void RunFlowProfile()
         {
+            if (!USBConnected) return;
+
             List<Double> times = new List<Double>();
             List<Double> values = new List<Double>();
 
@@ -156,10 +163,11 @@ namespace FlowCalibration
         }
 
 
-        public void InitializeMotor()
+        public void InitializeMotor(String portName)
         {
-            modCom = new ModbusCommunication();
+            modCom = new ModbusCommunication(portName);
             motorControl = new MotorControl(modCom);
+            USBConnected = true;
         }
 
         public void SaveProfile(String filePath)
