@@ -176,7 +176,8 @@
                             <TextBlock Text="{Binding RecordedMinVolume, StringFormat='Minimum volume {0} (ml)'}" Style="{StaticResource smallText}" Margin="10"/>
                         </StackPanel>
                     </GroupBox>
-                    <Button Content="Export Results" Style="{StaticResource smallButton}" Margin="0,10,10,0"/>
+                    <Button Name="SaveLoggedFlow_Button" Content="Save recorded flow" Style="{StaticResource smallButton}" Margin="0,10,10,0" Click="SaveLoggedFlow_Button_Click" />
+                    <Button Name="SaveLoggedVolume_Button" Content="Save recorded volume" Style="{StaticResource smallButton}" Margin="0,10,10,0" Click="SaveLoggedVolume_Button_Click" />
                 </StackPanel>
 
                 <oxy:Plot Grid.Column="1" Margin="0 20">

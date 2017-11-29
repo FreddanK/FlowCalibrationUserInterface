@@ -170,12 +170,12 @@ namespace FlowCalibration
             USBConnected = true;
         }
 
-        public void SaveProfile(String filePath)
+        public void SaveProfile(String filePath, IList<DataPoint> dataPoints)
         {
             List<Double> times = new List<Double>();
             List<Double> values = new List<Double>();
 
-            foreach (DataPoint point in ControlFlowPoints)
+            foreach (DataPoint point in dataPoints)
             {
                 times.Add(point.X);
                 values.Add(point.Y);

@@ -92,9 +92,8 @@ namespace FlowCalibration
             SaveFileDialog saveDialog = new SaveFileDialog();
             if( saveDialog.ShowDialog() == true )
             {
-                ViewModel.SaveProfile(saveDialog.FileName);
+                ViewModel.SaveProfile(saveDialog.FileName, ViewModel.ControlFlowPoints);
             }
-
         }
 
         private void Connect_Button_Click(object sender, RoutedEventArgs e)
@@ -103,6 +102,24 @@ namespace FlowCalibration
             if(!ViewModel.USBConnected)
             {
                 ViewModel.InitializeMotor(portName);
+            }
+        }
+
+        private void SaveLoggedVolume_Button_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveDialog = new SaveFileDialog();
+            if( saveDialog.ShowDialog() == true )
+            {
+                ViewModel.SaveProfile(saveDialog.FileName, ViewModel.LogVolumePoints);
+            }
+        }
+
+        private void SaveLoggedFlow_Button_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveDialog = new SaveFileDialog();
+            if( saveDialog.ShowDialog() == true )
+            {
+                ViewModel.SaveProfile(saveDialog.FileName, ViewModel.LogFlowPoints);
             }
         }
     }
