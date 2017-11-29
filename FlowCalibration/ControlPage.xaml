@@ -67,7 +67,7 @@
         </Style>
     </Page.Resources>
 
-    <TabControl TabStripPlacement="Bottom" Background="{StaticResource color1Brush}" Foreground="{StaticResource color5Brush}">
+    <TabControl TabStripPlacement="Top" Background="{StaticResource color1Brush}" Foreground="{StaticResource color5Brush}">
         <TabItem Header="Control" Style="{StaticResource tabItem}">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -127,8 +127,12 @@
                     </StackPanel>
 
                     <oxy:Plot Grid.Row="1" Grid.ColumnSpan="2">
+                        <oxy:Plot.Axes>
+                            <oxy:LinearAxis Position="Bottom" Title="Time (s)"/>
+                            <oxy:LinearAxis Position="Left" Title="Flow (ml/s)"/>
+                        </oxy:Plot.Axes>
                         <oxy:Plot.Series>
-                            <oxy:StairStepSeries ItemsSource="{Binding ControlFlowPoints}"/>
+                            <oxy:StairStepSeries ItemsSource="{Binding ControlFlowPoints}" Title="Flow (ml/s)"/>
                         </oxy:Plot.Series> 
                     </oxy:Plot>
 
@@ -150,29 +154,34 @@
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Margin="20">
+                <StackPanel Margin="10 20">
                     <TextBlock Text="Statistics:" Style="{StaticResource largeText}"/>
                     <GroupBox>
                         <StackPanel>
-                            <TextBlock Text="Date: 2016-11-16 09:10:13" Style="{StaticResource smallText}" Margin="10"/>
-                            <TextBlock Text="Flow Profile: Custom" Style="{StaticResource smallText}" Margin="10"/>
-                            <TextBlock Text="Running time: 3 (s)" Style="{StaticResource smallText}" Margin="10"/>
-                            <TextBlock Text="Maximum flow: 10 (ml/s)" Style="{StaticResource smallText}" Margin="10"/>
-                            <TextBlock Text="Minimum flow: (ml/s)" Style="{StaticResource smallText}" Margin="10"/>
-                            <TextBlock Text="Maximum volume: 10 (ml)" Style="{StaticResource smallText}" Margin="10"/>
-                            <TextBlock Text="Minimum volume: 0 (ml)" Style="{StaticResource smallText}" Margin="10"/>
+                            <TextBlock Text="{Binding RecordedDateTime, StringFormat='Date: {0}'}" Style="{StaticResource smallText}" Margin="10"/>
+                            <TextBlock Text="{Binding RecordedProfile, StringFormat='Flow Profile: {0}' }" Style="{StaticResource smallText}" Margin="10"/>
+                            <TextBlock Text="{Binding RecordedMaxTime, StringFormat='Running time: {0} (s)'}" Style="{StaticResource smallText}" Margin="10"/>
+                            <TextBlock Text="{Binding RecordedMaxFlow, StringFormat='Maximum flow: {0} (ml/s)'}" Style="{StaticResource smallText}" Margin="10"/>
+                            <TextBlock Text="{Binding RecordedMinFlow, StringFormat='Minimum flow: {0} (ml/s)'}" Style="{StaticResource smallText}" Margin="10"/>
+                            <TextBlock Text="{Binding RecordedMaxVolume, StringFormat='Maximum volume {0} (ml)'}" Style="{StaticResource smallText}" Margin="10"/>
+                            <TextBlock Text="{Binding RecordedMinVolume, StringFormat='Minimum volume {0} (ml)'}" Style="{StaticResource smallText}" Margin="10"/>
                         </StackPanel>
                     </GroupBox>
                     <Button Content="Export Results" Style="{StaticResource smallButton}" Margin="0,10,10,0"/>
                 </StackPanel>
 
-                <oxy:Plot Grid.Column="1">
+                <oxy:Plot Grid.Column="1" Margin="0 20">
+                    <oxy:Plot.Axes>
+                        <oxy:LinearAxis Position="Bottom" Title="Time (s)"/>
+                        <oxy:LinearAxis Position="Left"/>
+                    </oxy:Plot.Axes>
                     <oxy:Plot.Series>
-                        <oxy:LineSeries ItemsSource="{Binding LogFlowPoints}"/>
-                        <oxy:LineSeries ItemsSource="{Binding LogVolumePoints}"/>
-                    </oxy:Plot.Series> 
+                        <oxy:StairStepSeries ItemsSource="{Binding ControlFlowPoints}" Title="Flowprofile (ml/s)"/>
+                        <oxy:StairStepSeries ItemsSource="{Binding LogFlowPoints}" Title="Recorded Flow (ml/s)"/>
+                        <oxy:LineSeries ItemsSource="{Binding LogVolumePoints}" Title="Recorded Volume (ml)"/>
+                    </oxy:Plot.Series>
                 </oxy:Plot>
             </Grid>
         </TabItem>

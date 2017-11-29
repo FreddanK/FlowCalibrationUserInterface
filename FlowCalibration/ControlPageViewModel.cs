@@ -29,7 +29,15 @@ namespace FlowCalibration
         public Double Frequency { get; set; }
         public Double SamplingInterval { get; set; }
         public Double Repeat { get; set; }
-        public int R { get; set; }
+
+        
+        public String RecordedProfile { get; set; }
+        public String RecordedDateTime { get; set; }
+        public Double RecordedMaxTime { get; set; }
+        public Double RecordedMinFlow { get; set; }
+        public Double RecordedMaxFlow { get; set; }
+        public Double RecordedMinVolume { get; set; }
+        public Double RecordedMaxVolume { get; set; }
 
         ModbusCommunication modCom;
         MotorControl motorControl;
@@ -48,14 +56,18 @@ namespace FlowCalibration
             LogFlowPoints = new ObservableCollection<DataPoint>();
             LogVolumePoints = new ObservableCollection<DataPoint>();
 
-            UpdateObservableCollectionFromIList(LogFlowPoints, points1.Points);
-            UpdateObservableCollectionFromIList(LogVolumePoints, points2.Points);
-
             Amplitude = 1;
             Frequency = 1;
             SamplingInterval = 0.1;
             Repeat = 1;
-            R = 1;
+
+            RecordedProfile = "2012";
+            RecordedDateTime = "2012";
+            RecordedMaxTime = 0;
+            RecordedMinFlow = 0;
+            RecordedMaxFlow = 0;
+            RecordedMinVolume = 0;
+            RecordedMaxVolume = 0;
 
 
         }
@@ -101,6 +113,8 @@ namespace FlowCalibration
             }
 
             motorControl.RunWithVelocity(values, times);
+
+            RecordedProfile = CurrentProfileName;
         }
 
         public void InitializeMotor()
