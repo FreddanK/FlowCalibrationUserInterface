@@ -38,7 +38,7 @@ namespace Model
 		    var adapter = new SerialPortAdapter(serialPort);
             // create modbus master
             Master = ModbusSerialMaster.CreateRtu(adapter);
-		}
+        }
 
         public static string getSerialPortName()
         {

@@ -33,7 +33,7 @@ namespace Model
             public const Double PressureGain = 1; // [motor Pressure [VDC] to Pressure [?] gain]
             public const Double PressureBias = 0; // [motor Pressure [VDC] to Pressure [?] bias]
         }
-        struct Register
+        public struct Register
         {
             // DEFINE REGISTERS 
             // REGISTER: 450/451 (int32)
@@ -147,6 +147,17 @@ namespace Model
             RecordedVelocities = new List<Double>();
             RecordedTorques = new List<Double>();
             RecordedPressures = new List<Double>();
+
+            CreateEvent((ushort)0,
+                                   (Int16)(0B000000000100000), //bitmask to get torque from status register
+                                   (Int16)(MotorControl.Register.Status),
+                                   (ushort)0XF007, // and between bitmask and status register
+                                   (Int16)(MotorControl.Register.Mode),
+                                   (ushort)0,
+                                   (Int16)0); //no source register
+
+            ModCom.RunModbus(MotorControl.Register.MotorTorqueMax, (Int16)100);
+
         }
 
         public void RunWithPosition(List<Double> positions, List<Double> times)
@@ -201,10 +212,10 @@ namespace Model
                     ModCom.RunModbus(Register.TargetInput,(Int32)ticks[i]);
 
                     // Read values that should be logged
-                    MotorRecordedTimes[i] = ModCom.ReadModbus(Register.Time, 2, false);
+                    //MotorRecordedTimes[i] = ModCom.ReadModbus(Register.Time, 2, false);
                     MotorRecordedPositions[i] = ModCom.ReadModbus(Register.Position, 2, true);
                     //MotorRecordedVelocities[i] = ModCom.ReadModbus(Register.Speed, 1, false);
-                    //StopwatchRecordedTimes[i] = stopWatch.Elapsed.TotalSeconds;
+                    StopwatchRecordedTimes[i] = stopWatch.Elapsed.TotalSeconds;
                     //MotorRecordedTorques[i] = ModCom.ReadModbus(Register.Torque, 1, false);
                     //MotorRecordedPressures[i] = ModCom.ReadModbus(Register.Pressure, 1, false);
 
@@ -228,11 +239,12 @@ namespace Model
             //TODO if garbage collection was turned off, turn it on here
 
             // Convert units
-            RecordedTimes = TimeToSeconds(MotorRecordedTimes);
+            //RecordedTimes = TimeToSeconds(MotorRecordedTimes);
             RecordedPositions = TickToPosition(MotorRecordedPositions);
             RecordedVelocities = TicksPerSecondToVelocity(MotorRecordedVelocities);
             RecordedTorques = MotorTorquesToTorques(MotorRecordedTorques);
             RecordedPressures = MotorPressureToPressure(MotorRecordedPressures);
+            RecordedTimes = StopwatchRecordedTimes.ToList<Double>();
         }
 
         public List<int> PositionToTick(List<Double> positions)
@@ -240,7 +252,7 @@ namespace Model
             List<int> ticks = new List<int>();
             for (int i = 0; i < positions.Count; i++)
             {
-                ticks.Add( (int)Math.Round(positions[i] * 10 * Hardware.TicksPerRev / Hardware.Pitch));
+                ticks.Add(-(int)Math.Round(positions[i] * 10 * Hardware.TicksPerRev / Hardware.Pitch));
             }
             return ticks;
         }
@@ -251,7 +263,7 @@ namespace Model
             for (int i = 0; i < velocities.Count; i++)
             {
                 //TODO this conversion is the same as for position. Check so that it is correct.
-                ticks.Add( (int)Math.Round(velocities[i] * 10 * Hardware.TicksPerRev / Hardware.Pitch / Hardware.VelocityResolution));
+                ticks.Add(-(int)Math.Round(velocities[i] * 10 * Hardware.TicksPerRev / Hardware.Pitch / Hardware.VelocityResolution));
             }
             return ticks;
         }
@@ -261,7 +273,7 @@ namespace Model
             List<Double> position = new List<Double>();
             for (int i = 0; i < ticks.Count; i++)
             {
-                position.Add((Double)ticks[i] * Hardware.Pitch / Hardware.TicksPerRev /10);
+                position.Add(-(Double)ticks[i] * Hardware.Pitch / Hardware.TicksPerRev /10);
             }
             return position;
         }
@@ -271,7 +283,7 @@ namespace Model
             List<Double> velocity = new List<Double>();
             for (int i = 0; i < ticksPerSecond.Count; i++)
             {
-                velocity.Add((Double)ticksPerSecond[i] * Hardware.Pitch * Hardware.VelocityResolution/Hardware.TicksPerRev/10);
+                velocity.Add(-(Double)ticksPerSecond[i] * Hardware.Pitch * Hardware.VelocityResolution/Hardware.TicksPerRev/10);
             }
             return velocity;
         }
