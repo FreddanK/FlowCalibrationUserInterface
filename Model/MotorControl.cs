@@ -48,6 +48,8 @@ namespace Model
             public const ushort Time = 420;
             // REGISTER: 170-173
             public const ushort Pressure = 170;
+			// REGISTER: 170 Output/Input 2
+			public const ushort Output2 = 171;
             // REGISTER: 353 
             public const ushort Acceleration = 353;
             // REGISTER: 354 
@@ -60,6 +62,7 @@ namespace Model
 			public const ushort MotorTorqueMax = 204;
             // REGISTER: 410: current Status
 			public const ushort Status = 410;
+ 
 
             // 20 possible events. Mapped by increase of 20.... I guess
             // goes from 680 to 699
@@ -148,15 +151,27 @@ namespace Model
             RecordedTorques = new List<Double>();
             RecordedPressures = new List<Double>();
 
+            // create event reading the maximum torque status register
             CreateEvent((ushort)0,
                                    (Int16)(0B000000000100000), //bitmask to get torque from status register
                                    (Int16)(MotorControl.Register.Status),
-                                   (ushort)0XF007, // and between bitmask and status register
+                                   (ushort)0XF007, // logical 'and' between bitmask and status register
                                    (Int16)(MotorControl.Register.Mode),
                                    (ushort)0,
                                    (Int16)0); //no source register
-
+            
+            // set a maximum allowed torque
             ModCom.RunModbus(MotorControl.Register.MotorTorqueMax, (Int16)100);
+
+            /* Set output high if target input not 0
+            CreateEvent((ushort)(1),
+                        (Int16) (0),
+                        (Int16) (MotorControl.Register.TargetInput),
+                        (ushort) 0XF004,
+                        (Int16) MotorControl.Register.Output2,
+                        (ushort) somethingsomething,
+                        (Int16) 0; //no source
+            */
 
         }
 
