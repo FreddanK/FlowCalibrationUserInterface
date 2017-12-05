@@ -48,8 +48,10 @@ namespace Model
             public const ushort Time = 420;
             // REGISTER: 170-173
             public const ushort Pressure = 170;
-			// REGISTER: 170 Output/Input 2
-			public const ushort Output2 = 171;
+			// REGISTER: 150 OutputControl 1
+			public const ushort OutputControl1 = 150;
+			// REGISTER: 160 Output 1
+			public const ushort Output1 = 160;
             // REGISTER: 353 
             public const ushort Acceleration = 353;
             // REGISTER: 354 
@@ -161,19 +163,29 @@ namespace Model
                                    (Int16)0); //no source register
             
             // set a maximum allowed torque
-            ModCom.RunModbus(MotorControl.Register.MotorTorqueMax, (Int16)100);
+            ModCom.RunModbus(MotorControl.Register.MotorTorqueMax, (Int16) 100);
 
-            /* Set output high if target input not 0
-            CreateEvent((ushort)(1),
-                        (Int16) (0),
-                        (Int16) (MotorControl.Register.TargetInput),
-                        (ushort) 0XF004,
-                        (Int16) MotorControl.Register.Output2,
-                        (ushort) somethingsomething,
-                        (Int16) 0; //no source
-            */
+			// make sure output register 1 is 0
+			ModCom.RunModbus(MotorControl.Register.Output1, (Int16) 0);
 
-        }
+			// Set output 1 high if target input is not 0
+			CreateEvent((ushort) 1,
+                        (Int16) 0,
+                        (Int16) MotorControl.Register.TargetInput,
+                        (ushort) 0XF005, // 0 or TargetInput as trigger, then write specified value
+                        (Int16) MotorControl.Register.Output1,
+                        (ushort) 1,
+                        (Int16) 0); //no source
+            
+            // Set output 1 low if target input is 0.
+			CreateEvent((ushort) 2,
+            			(Int16) 0,
+            			(Int16) MotorControl.Register.TargetInput,
+            			(ushort) 0XF004, // 0 and TargetInput as trigger, then write specified value
+            			(Int16) MotorControl.Register.Output1,
+            			(ushort) 0,
+                        (Int16) 0); //no source
+		}
 
         public void RunWithPosition(List<Double> positions, List<Double> times)
         {
