@@ -167,8 +167,9 @@ namespace Model
 
 
 			// make sure output register 1 is 0
-			ModCom.RunModbus(MotorControl.Register.Output3, (Int16) 0);
+			//ModCom.RunModbus(MotorControl.Register.Output3, (Int16) 0);
 
+<<<<<<< HEAD
             ModCom.RunModbus(MotorControl.Register.OutputControl3, (Int16)0X0005);
 
 			// Set output 1 high if target input is not 0
@@ -190,6 +191,27 @@ namespace Model
             			(ushort) 1,
                         (Int16) 0); //no source
                         
+=======
+            //ModCom.RunModbus(MotorControl.Register.OutputControl3, (Int16)0);
+
+			// Set output 1 high if target input is not 0
+			//CreateEvent((ushort) 1,
+            //            (Int16) 0,
+            //            (Int16) MotorControl.Register.TargetInput,
+            //            (ushort) 0XF005, // 0 or TargetInput as trigger, then write specified value
+            //            (Int16) MotorControl.Register.Output3,
+            //            (ushort) 1,
+            //            (Int16) 0); //no source
+            
+            //// Set output 1 low if target input is 0.
+			//CreateEvent((ushort) 2,
+            //			(Int16) 0,
+            //			(Int16) MotorControl.Register.TargetInput,
+            //			(ushort) 0XF004, // 0 and TargetInput as trigger, then write specified value
+            //			(Int16) MotorControl.Register.Output3,
+            //			(ushort) 0,
+            //            (Int16) 0); //no source
+>>>>>>> 16914b47b60fe1aa953ca5a116b76c6522fa0a91
 		}
 
         public void RunWithPosition(List<Double> positions, List<Double> times)
