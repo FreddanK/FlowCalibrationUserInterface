@@ -29,8 +29,8 @@ namespace Model
                 Parity = Parity.Even,
                 StopBits = StopBits.One,
                 Handshake = Handshake.None,
-                ReadTimeout = 50,
-                WriteTimeout = 50
+                ReadTimeout = 20,
+                WriteTimeout = 20
             };
 
             serialPort.Open();
