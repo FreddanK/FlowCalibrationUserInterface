@@ -470,14 +470,46 @@ namespace Model
 
                 modCom.RunModbus(Register.MotorTorqueMax, (Int16)100);
 
-                List<Int32> ticks = new List<Int32>() { 0, 100, 1000, 2000, 3000, 2000, 1000, 100, 0 };
+                int dummieRead;
+                Double[] RecordedTimes1 = new Double[100];
+                Double[] RecordedTimes2 = new Double[100];
+                Double[] RecordedTimesRead = new Double[100];
+                Double[] RecordedTimesWrite = new Double[100];
+                Stopwatch stopWatch = new Stopwatch();
+                stopWatch.Start();
+                for (int i = 0; i < 99; i++)
+                {
+                    RecordedTimes1[i] = stopWatch.Elapsed.TotalSeconds;
+                    dummieRead = modCom.ReadModbus(Register.Position, 2, true);
+                    RecordedTimes2[i] = stopWatch.Elapsed.TotalSeconds;
+                }
+                for (int i = 0; i < 100; i++)
+                {
+                    RecordedTimesRead[i] = RecordedTimes2[i] - RecordedTimes1[i];
+                }
+                for (int i = 0; i < 100; i++)
+                {
+                    RecordedTimes1[i] = stopWatch.Elapsed.TotalSeconds;
+                    modCom.RunModbus((ushort)450, (int)0);
+                    RecordedTimes2[i] = stopWatch.Elapsed.TotalSeconds;
+                }
+                for (int i = 0; i < 100; i++)
+                {
+                    RecordedTimesWrite[i] = RecordedTimes2[i] - RecordedTimes1[i];
+                }
+                Console.WriteLine("Read: Max: {0}, Min: {1}, Avr: {2}", RecordedTimesRead.Max(), RecordedTimesRead.Min(), RecordedTimesRead.Average());
+                Console.WriteLine("Write: Max: {0}, Min: {1}, Avr: {2}", RecordedTimesWrite.Max(), RecordedTimesWrite.Min(), RecordedTimesWrite.Average());
+
+                //List<Int32> ticks = new List<Int32>() { 0, 100, 1000, 2000, 3000, 2000, 1000, 100, 0 };
                 //List<Int32> ticks = new List<Int32>() {0,2000,4000,8000,4000,500,-2000,-2000,0};
-                List<double> times = new List<double>() { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+                //List<double> times = new List<double>() { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 
                 //motCon.RunTickSequence(ticks, times, Mode.PositionRamp);
-                motCon.ManualControl();
+                //motCon.ManualControl();
                 //Console.ReadLine();
                 modCom.EndModbus();
+
+                Console.ReadLine();
 
             }
         }
