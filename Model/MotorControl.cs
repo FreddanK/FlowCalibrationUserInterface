@@ -165,8 +165,11 @@ namespace Model
             // set a maximum allowed torque
             ModCom.RunModbus(MotorControl.Register.MotorTorqueMax, (Int16) 100);
 
+
 			// make sure output register 1 is 0
 			ModCom.RunModbus(MotorControl.Register.Output3, (Int16) 0);
+
+            ModCom.RunModbus(MotorControl.Register.OutputControl3, (Int16)0);
 
 			// Set output 1 high if target input is not 0
 			CreateEvent((ushort) 1,
