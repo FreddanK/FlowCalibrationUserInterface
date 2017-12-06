@@ -48,10 +48,10 @@ namespace Model
             public const ushort Time = 420;
             // REGISTER: 170-173
             public const ushort Pressure = 170;
-			// REGISTER: 150 OutputControl 1
-			public const ushort OutputControl1 = 150;
-			// REGISTER: 160 Output 1
-			public const ushort Output1 = 160;
+			// REGISTER: 152 OutputControl 3
+			public const ushort OutputControl3 = 152;
+			// REGISTER: 163 Output 3
+			public const ushort Output3 = 162;
             // REGISTER: 353 
             public const ushort Acceleration = 353;
             // REGISTER: 354 
@@ -166,14 +166,14 @@ namespace Model
             ModCom.RunModbus(MotorControl.Register.MotorTorqueMax, (Int16) 100);
 
 			// make sure output register 1 is 0
-			ModCom.RunModbus(MotorControl.Register.Output1, (Int16) 0);
+			ModCom.RunModbus(MotorControl.Register.Output3, (Int16) 0);
 
 			// Set output 1 high if target input is not 0
 			CreateEvent((ushort) 1,
                         (Int16) 0,
                         (Int16) MotorControl.Register.TargetInput,
                         (ushort) 0XF005, // 0 or TargetInput as trigger, then write specified value
-                        (Int16) MotorControl.Register.Output1,
+                        (Int16) MotorControl.Register.Output3,
                         (ushort) 1,
                         (Int16) 0); //no source
             
@@ -182,7 +182,7 @@ namespace Model
             			(Int16) 0,
             			(Int16) MotorControl.Register.TargetInput,
             			(ushort) 0XF004, // 0 and TargetInput as trigger, then write specified value
-            			(Int16) MotorControl.Register.Output1,
+            			(Int16) MotorControl.Register.Output3,
             			(ushort) 0,
                         (Int16) 0); //no source
 		}
