@@ -42,7 +42,7 @@ namespace Model
 
         public static string getSerialPortName()
         {
-            return "COM1";
+            return "COM3";
             //return "/dev/ttyUSB0"; // For Linux
             string NameOfDevice = "Moxa USB Serial Port";
             foreach (COMPortInfo comPort in COMPortInfo.GetCOMPortsInfo())
