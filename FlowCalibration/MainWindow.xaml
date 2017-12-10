@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FlowCalibration"
         mc:Ignorable="d"
-        Title="MainWindow" Height="550" Width="800" Background="White" Visibility="Visible" WindowStyle="SingleBorderWindow">
+        Title="Flow Calibration Tool" Height="550" Width="800" Background="White" Visibility="Visible" WindowStyle="SingleBorderWindow">
     <DockPanel>
         <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
     </DockPanel>

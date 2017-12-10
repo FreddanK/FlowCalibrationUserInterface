@@ -9,10 +9,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Windows.Data;
+using System.Runtime.CompilerServices;
 
 namespace FlowCalibration
 {
-    class ControlPageViewModel
+    class ControlPageViewModel : INotifyPropertyChanged
     {
         public ObservableCollection<DataPoint> LogFlowPoints { get; private set; }
 
@@ -31,20 +32,98 @@ namespace FlowCalibration
         public Double Repeat { get; set; }
 
         
-        public String RecordedProfile { get; set; }
-        public String RecordedDateTime { get; set; }
-        public Double RecordedMaxTime { get; set; }
-        public Double RecordedMinFlow { get; set; }
-        public Double RecordedMaxFlow { get; set; }
-        public Double RecordedMinVolume { get; set; }
-        public Double RecordedMaxVolume { get; set; }
+        public String recordedProfile;
+        public String RecordedProfile
+        {
+            get { return recordedProfile; }
+            set { if (value != recordedProfile) {
+                    recordedProfile = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        public String recordedDateTime;
+        public String RecordedDateTime
+        {
+            get { return recordedDateTime; }
+            set { if (value != recordedDateTime) {
+                    recordedDateTime = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        public Double recordedMaxTime;
+        public Double RecordedMaxTime
+        {
+            get { return recordedMaxTime; }
+            set { if (value != recordedMaxTime) {
+                    recordedMaxTime = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        public Double recordedMinFlow;
+        public Double RecordedMinFlow
+        {
+            get { return recordedMinFlow; }
+            set { if (value != recordedMinFlow) {
+                    recordedMinFlow = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        public Double recordedMaxFlow;
+        public Double RecordedMaxFlow
+        {
+            get { return recordedMaxFlow; }
+            set { if (value != recordedMaxFlow) {
+                    recordedMaxFlow = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        public Double recordedMinVolume;
+        public Double RecordedMinVolume
+        {
+            get { return recordedMinVolume; }
+            set { if (value != recordedMinVolume) {
+                    recordedMinVolume = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        public Double recordedMaxVolume;
+        public Double RecordedMaxVolume
+        {
+            get { return recordedMaxVolume; }
+            set { if (value != recordedMaxVolume) {
+                    recordedMaxVolume = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
 
-        public Boolean USBConnected { get; set; }
+        private Boolean usbConnected;
+        public Boolean USBConnected
+        {
+            get { return usbConnected; }
+            set { if (value != usbConnected) {
+                    usbConnected = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
 
         ModbusCommunication modCom;
         MotorControl motorControl;
         ProfileConverter ProfileConverter;
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
         public ControlPageViewModel()
         {

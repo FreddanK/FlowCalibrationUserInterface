@@ -131,7 +131,7 @@
 
                     <StackPanel Grid.Row="2">
                         <TextBlock Text="Serial port: " Style="{StaticResource smallText}" Margin="20,0"/>
-                        <TextBox Name="COM_port_TextBox" Text="COM1" Style="{StaticResource textBox}" Margin="20 0 50 0"/>
+                        <TextBox Name="COM_port_TextBox" Text="COM3" Style="{StaticResource textBox}" Margin="20 0 50 0"/>
                         <!--<ComboBox Name="COMPort_Combobox" SelectedValuePath="Content" Margin="20,0"/>-->
                         <Button Name="Connect_Button" Content="Connect" Style="{StaticResource smallButton}" Margin="20 10 80 0" Click="Connect_Button_Click"/>
 
