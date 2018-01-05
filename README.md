@@ -6,14 +6,14 @@ It is also possible to create flow profiles in external programs and save them a
 When the flow profile is run, the program will record the position at each sampling instance and with that information it will calculate the actual output volume and flow and presented to the user.
 
 ## Installation
-1) download the installer filename.exe
-2) run the installer
+1) Download the file: FlowCalibrationSetup-v-1-0.zip.
+2) Extract the contents of the zip file.
+3) Run the setup application.
 
-It is strongly recommended to also download the graphical user interface from Simplex Motion (http://simplexmotion.com/products/simplexmotiontool/). This is a safe way to test that the servo functions properly and that everything is correctly connected before running the FlowCalibration user interface.
+It is strongly recommended to also download the graphical user interface from Simplex Motion: http://simplexmotion.com/products/simplexmotiontool/. This is a safe way to test that the servo functions properly and that everything is correctly connected before running the FlowCalibration user interface.
 
 ## Usage
-to graphical user interface from simplex motion.
-
+...
 
 ## Getting started with developement
 
@@ -59,14 +59,11 @@ Model features that needs to be reached:
 ### Model
 	
 * ProfileConverter - Contains functions for converting between flow and volume and flow to position and velocity.
-						Needs parameters related to the mechanical construction, syringe diameter.
 
 * MotorControl - Controls the motor with a list of position and times or velocity and times. 
 					Can convert from position to ticks or velocity to ticks per second and the other way.
-					Implements homing sequence.
 
-* ModbusCommunication - Wrapper for the NModBus4.Serial library.
-						Handles conversions between different signed and unsigned integer and short types and stuff like that.
+* ModbusCommunication - Wrapper for the NModBus4.Serial library. Used as an interface between MotorControl and the NModBus4 library.
 
 * Program - Class with console test program for the Model.
 
@@ -86,7 +83,11 @@ Missing references to oxyplot and NModbus4. _Check that the NuGet package manage
 
 ## Authors
 Fredrik Kjellberg
+
 Gustav Lindberg
+
 Fredrik Schyum
+
 Johan Lund
+
 Lars Brown
