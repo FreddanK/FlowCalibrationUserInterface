@@ -34,6 +34,7 @@ namespace Model
             };
 
             serialPort.Open();
+            
         
 		    var adapter = new SerialPortAdapter(serialPort);
             // create modbus master

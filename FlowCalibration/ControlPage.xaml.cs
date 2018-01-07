@@ -56,7 +56,7 @@ namespace FlowCalibration
             bool samplingIntervalOK = Double.TryParse(SamplingInterval_TextBox.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out samplingInterval);
             bool repeatOK = Double.TryParse(Repeat_TextBox.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out repeat);
 
-            if (amplitudeOK && frequencyOK && samplingIntervalOK && repeatOK && frequency > 0 && samplingInterval > 0.005 && repeat <= 10)
+            if (amplitudeOK && frequencyOK && samplingIntervalOK && repeatOK && frequency >= 0.1 && samplingInterval >= 0.04 && repeat <= 10)
             {
                 ViewModel.Amplitude = amplitude;
                 ViewModel.Frequency = frequency;
@@ -99,10 +99,18 @@ namespace FlowCalibration
         private void Connect_Button_Click(object sender, RoutedEventArgs e)
         {
             String portName = COM_port_TextBox.Text;
-            if(!ViewModel.USBConnected)
+            if (!ViewModel.USBConnected)
             {
-                ViewModel.InitializeMotor(portName);
+                try
+                {
+                    ViewModel.InitializeMotor(portName);
+                }
+                catch (System.IO.IOException ex)
+                {
+                    MessageBox.Show(ex.Message,"Error message");
+                }
             }
+                
         }
 
         private void SaveLoggedVolume_Button_Click(object sender, RoutedEventArgs e)

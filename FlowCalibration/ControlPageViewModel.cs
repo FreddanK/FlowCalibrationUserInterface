@@ -15,12 +15,31 @@ namespace FlowCalibration
 {
     class ControlPageViewModel : INotifyPropertyChanged
     {
+        #region Variable declarations
+
+        ModbusCommunication modCom;
+        MotorControl motorControl;
+        ProfileConverter ProfileConverter;
+
+        public String recordedProfile;
+        public String recordedDateTime;
+        public Double recordedMaxTime;
+        public Double recordedMinFlow;
+        public Double recordedMaxFlow;
+        public Double recordedMinVolume;
+        public Double recordedMaxVolume;
+        private Boolean usbConnected;
+
+        #endregion
+
+        #region Property declarations
+
         public ObservableCollection<DataPoint> LogFlowPoints { get; private set; }
 
         public ObservableCollection<DataPoint> LogVolumePoints { get; private set; }
 
         public ObservableCollection<DataPoint> ControlFlowPoints { get; private set; }
-        public ObservableCollection<PointTracker> Points { get; private set; }
+        public ObservableCollection<PointTracker> TrackedFlowPoints { get; private set; }
 
         public ObservableCollection<String> FlowProfileNames { get; private set; }
 
@@ -30,9 +49,7 @@ namespace FlowCalibration
         public Double Frequency { get; set; }
         public Double SamplingInterval { get; set; }
         public Double Repeat { get; set; }
-
         
-        public String recordedProfile;
         public String RecordedProfile
         {
             get { return recordedProfile; }
@@ -42,7 +59,6 @@ namespace FlowCalibration
                 }
             }
         }
-        public String recordedDateTime;
         public String RecordedDateTime
         {
             get { return recordedDateTime; }
@@ -52,7 +68,6 @@ namespace FlowCalibration
                 }
             }
         }
-        public Double recordedMaxTime;
         public Double RecordedMaxTime
         {
             get { return recordedMaxTime; }
@@ -62,7 +77,6 @@ namespace FlowCalibration
                 }
             }
         }
-        public Double recordedMinFlow;
         public Double RecordedMinFlow
         {
             get { return recordedMinFlow; }
@@ -72,7 +86,6 @@ namespace FlowCalibration
                 }
             }
         }
-        public Double recordedMaxFlow;
         public Double RecordedMaxFlow
         {
             get { return recordedMaxFlow; }
@@ -82,7 +95,6 @@ namespace FlowCalibration
                 }
             }
         }
-        public Double recordedMinVolume;
         public Double RecordedMinVolume
         {
             get { return recordedMinVolume; }
@@ -92,7 +104,6 @@ namespace FlowCalibration
                 }
             }
         }
-        public Double recordedMaxVolume;
         public Double RecordedMaxVolume
         {
             get { return recordedMaxVolume; }
@@ -102,8 +113,6 @@ namespace FlowCalibration
                 }
             }
         }
-
-        private Boolean usbConnected;
         public Boolean USBConnected
         {
             get { return usbConnected; }
@@ -113,10 +122,11 @@ namespace FlowCalibration
                 }
             }
         }
+        public string PortName { get; set; }
+  
+        #endregion
 
-        ModbusCommunication modCom;
-        MotorControl motorControl;
-        ProfileConverter ProfileConverter;
+        #region INotifyPropertyChanged implementation
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -125,23 +135,26 @@ namespace FlowCalibration
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        #endregion
+
+        #region Function definitions
+
         public ControlPageViewModel()
         {
             FlowProfileNames = new ObservableCollection<string>
             {
-                "Sine", "Square", "Triangle", "Ramp", "Peaks", "Custom"
+                "Sine", "Square", "Triangle", "Peaks", "Custom"
             };
 
-            FunctionSeries points1 = new FunctionSeries(Math.Cosh, 0, 3, 0.1, "Flow (ml/s)");
-            FunctionSeries points2 = new FunctionSeries(Math.Sinh, 0, 3, 0.1, "Volume (ml)");
-            Points = new ObservableCollection<PointTracker>();
+            TrackedFlowPoints = new ObservableCollection<PointTracker>();
             ControlFlowPoints = new ObservableCollection<DataPoint>();
+
             LogFlowPoints = new ObservableCollection<DataPoint>();
             LogVolumePoints = new ObservableCollection<DataPoint>();
 
-            Amplitude = 1;
-            Frequency = 1;
-            SamplingInterval = 0.1;
+            Amplitude = 20;
+            Frequency = 3;
+            SamplingInterval = 0.04;
             Repeat = 1;
 
             RecordedProfile = "";
@@ -154,7 +167,8 @@ namespace FlowCalibration
 
             ProfileConverter = new ProfileConverter();
 
-            USBConnected = false;
+            USBConnected = true;
+            PortName = "COM1";
 
         }
 
@@ -186,12 +200,12 @@ namespace FlowCalibration
         private void UpdateFlowProfileFromIList(IList<DataPoint> pointList)
         {
             ControlFlowPoints.Clear();
-            Points.Clear();
+            TrackedFlowPoints.Clear();
             int i = 0;
             foreach(DataPoint point in pointList)
             {
                 ControlFlowPoints.Add(point);
-                Points.Add(new PointTracker(point.X, point.Y, i, ControlFlowPoints));
+                TrackedFlowPoints.Add(new PointTracker(point.X, point.Y, i, ControlFlowPoints));
                 i++;
             }
         }
@@ -199,12 +213,12 @@ namespace FlowCalibration
         private void UpdateFlowProfileFromLists(List<Double> times, List<Double> values)
         {
             ControlFlowPoints.Clear();
-            Points.Clear();
+            TrackedFlowPoints.Clear();
             for(int i=0; i<values.Count(); i++)
             {
                 DataPoint point = new DataPoint(times[i], values[i]);
                 ControlFlowPoints.Add(point);
-                Points.Add(new PointTracker(point.X, point.Y, i, ControlFlowPoints));
+                TrackedFlowPoints.Add(new PointTracker(point.X, point.Y, i, ControlFlowPoints));
             }
         }
 
@@ -224,7 +238,16 @@ namespace FlowCalibration
             values = ProfileConverter.FlowToVelocity(values);
 
             // Run sequence on motor
-            motorControl.RunWithVelocity(values, times);
+            try
+            {
+                motorControl.RunWithVelocity(values, times);
+            }
+            catch(Exception) // Not the best practice to catch all possible exceptions, but it works for now.
+            {
+                USBConnected = false;
+                return;
+            }
+            
 
             List<Double> recordedFlows = ProfileConverter.PositionToFlow(motorControl.RecordedPositions, motorControl.RecordedTimes);
             List<Double> recordedVolumes = ProfileConverter.PositionToVolume(motorControl.RecordedPositions);
@@ -273,12 +296,20 @@ namespace FlowCalibration
             UpdateFlowProfileFromLists(times, values);
         }
     }
+    #endregion
 
+
+    /// <summary>
+    /// The function of this class is to track an Oxyplot Datapoint contained in an ObservableCollection.
+    /// This is necessary because the X and Y value of an Oxyplot data point is read-only. 
+    /// What this allows us to achieve is to be able to dynamically update the X or Y value of a 
+    /// data point from the data grid in the program.
+    /// </summary>
     public class PointTracker
     {
-        public ObservableCollection<DataPoint> TrackedCollection { get; set; }
         double y;
         double x;
+
         public Double X
         {
             get { return x; }
@@ -297,6 +328,8 @@ namespace FlowCalibration
             }
         }
         public int Index { get; set; }
+
+        public ObservableCollection<DataPoint> TrackedCollection { get; set; }
 
         public PointTracker(Double x, Double y, int i, ObservableCollection<DataPoint> t)
         {

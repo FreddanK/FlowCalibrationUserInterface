@@ -8,12 +8,7 @@
       mc:Ignorable="d"
       Title="Page2">
     <Page.Resources>
-        <!-- Color goes from darker to brighter, so color1 is darkest-->
-        <!--<Color x:Key="color1">#101710</Color>
-        <Color x:Key="color2">#17231f</Color>
-        <Color x:Key="color3">#035e7b</Color>
-        <Color x:Key="color4">#e3e7af</Color>
-        <Color x:Key="color5">#eff1c5</Color>-->
+        <!-- Define colors and styles for elements-->
         <Color x:Key="color1">White</Color>
         <Color x:Key="color2">White</Color>
         <Color x:Key="color3">#035e7b</Color>
@@ -66,7 +61,8 @@
             <Setter Property="BorderBrush" Value="Transparent" />
         </Style>
     </Page.Resources>
-
+    
+    <!-- Start of elements placed on the page-->
     <TabControl TabStripPlacement="Top" Background="{StaticResource color1Brush}" Foreground="{StaticResource color5Brush}">
         <TabItem Header="Control" Style="{StaticResource tabItem}">
             <Grid>
@@ -80,6 +76,7 @@
                         <RowDefinition Height="2*"/>
                         <RowDefinition Height="3*"/>
                     </Grid.RowDefinitions>
+                    
                     <StackPanel>
                         <TextBlock Text="Data Control" Style="{StaticResource largeText}" HorizontalAlignment="Center"/>
                         <ComboBox Name="Profiles_ComboBox" SelectedValuePath="Content" Margin="20" ItemsSource="{Binding FlowProfileNames}" SelectionChanged="Profiles_ComboBox_SelectionChanged"/>
@@ -96,13 +93,14 @@
                         <TextBox Name="Repeat_TextBox" Text="{Binding Repeat}" Style="{StaticResource textBox}" PreviewKeyUp="Parameter_TextBox_PreviewKeyUp"/>
                     </StackPanel>
 
-                    <DataGrid Grid.Row="2" Name="Points_DataGrid" Margin="20 0 20 20" ItemsSource="{Binding Points}" AutoGenerateColumns="False" IsReadOnly="False">
+                    <DataGrid Grid.Row="2" Name="Points_DataGrid" Margin="20 0 20 20" ItemsSource="{Binding TrackedFlowPoints}" AutoGenerateColumns="False" IsReadOnly="False">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Time (s)" Binding="{Binding X}"/>
                             <DataGridTextColumn Header="Flow (ml/s)" Binding="{Binding Y}"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
+                
                 <Grid Grid.Column="1">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
@@ -117,7 +115,7 @@
                         <Button Name="LoadProfile_Button" Content="Load Profile"  Click="LoadProfile_Button_Click" Style="{StaticResource smallButton}" Margin="0,20,10,0"/>
                         <Button Name="SaveProfile_Button" Content="Save Profile" Click="SaveProfile_Button_Click" Style="{StaticResource smallButton}" Margin="0,20,10,0"/>
                     </StackPanel>
-
+                    
                     <oxy:Plot Grid.Row="1" Grid.ColumnSpan="2">
                         <oxy:Plot.Axes>
                             <oxy:LinearAxis Position="Bottom" Title="Time (s)"/>
@@ -131,7 +129,7 @@
 
                     <StackPanel Grid.Row="2">
                         <TextBlock Text="Serial port: " Style="{StaticResource smallText}" Margin="20,0"/>
-                        <TextBox Name="COM_port_TextBox" Text="COM3" Style="{StaticResource textBox}" Margin="20 0 50 0"/>
+                        <TextBox Name="COM_port_TextBox" Text="{Binding PortName}" Style="{StaticResource textBox}" Margin="20 0 50 0"/>
                         <!--<ComboBox Name="COMPort_Combobox" SelectedValuePath="Content" Margin="20,0"/>-->
                         <Button Name="Connect_Button" Content="Connect" Style="{StaticResource smallButton}" Margin="20 10 80 0" Click="Connect_Button_Click"/>
 
@@ -152,7 +150,7 @@
 
                     </StackPanel>
 
-                    <Button Name="Run_Button" Grid.Row="2" Grid.Column="1" Content="Run" Style="{StaticResource bigButton}" Margin="20" Click="Run_Button_Click"/>
+                    <Button Name="Run_Button" Grid.Row="2" Grid.Column="1" Content="Run" Style="{StaticResource bigButton}" Margin="30,15,30,40" Click="Run_Button_Click"/>
 
                 </Grid>
             </Grid>
