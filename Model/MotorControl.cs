@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Diagnostics;
 
 namespace Model
-{  
+{
+    /// <summary>
+    /// MotorControl - Controls the motor with a list of position and times or velocity and times.
+    /// </summary>
     public class MotorControl
-	// MotorControl - Controls the motor with a list of position and times or velocity and times. 
-	//     		      Can convert from position to ticks or velocity to ticks per second and the other way.
-	//				  Implements homing sequence.
-    //                Needs to have the pulley wheel size as parameter.
-    //                Assumes to get an initialized modbus object when created
     {
         ModbusCommunication ModCom { get; set; }
 
@@ -32,6 +28,7 @@ namespace Model
             public const Double MotorTorquePerTorque = 1000; // [motor Torue [mNm] per Torque [Nm]]
             public const Double PressureGain = 1; // [motor Pressure [VDC] to Pressure [?] gain]
             public const Double PressureBias = 0; // [motor Pressure [VDC] to Pressure [?] bias]
+            public const Int16 MaxTorque = 100;
         }
         public struct Register
         {
@@ -95,8 +92,7 @@ namespace Model
             public const Int16 Beep = 60;
         }
 
-        struct EventLogic
-        {
+        //EventLogic
             /* Note that only bits 0-3 of Register.EventControl is considered here.
             0    Always      true
             1   =       Equal
@@ -115,7 +111,7 @@ namespace Model
             14  /       Divide
             15  Value   Takes data value directly
             */
-        }
+        //
 
         public void CreateEvent(ushort EventNr,
                                 Int16 TrgData,
@@ -163,7 +159,7 @@ namespace Model
                                    (Int16)0); //no source register
             
             // set a maximum allowed torque
-            ModCom.RunModbus(MotorControl.Register.MotorTorqueMax, (Int16) 100);
+            ModCom.RunModbus(MotorControl.Register.MotorTorqueMax, Hardware.MaxTorque);
 
 
 			// make sure output register 1 is 0
@@ -189,6 +185,18 @@ namespace Model
             {
                 throw new Exception("Input lists not of equal length");
             }
+
+            // create event reading the maximum torque status register
+            CreateEvent((ushort)0,
+                                   (Int16)(0B000000000100000), //bitmask to get torque from status register
+                                   (Int16)(MotorControl.Register.Status),
+                                   (ushort)0XF007, // logical 'and' between bitmask and status register
+                                   (Int16)(MotorControl.Register.Mode),
+                                   (ushort)0,
+                                   (Int16)0); //no source register
+
+            // set a maximum allowed torque
+            ModCom.RunModbus(MotorControl.Register.MotorTorqueMax, Hardware.MaxTorque);
 
             int sequenceLength = ticks.Count();
 
@@ -233,21 +241,12 @@ namespace Model
                     i++;
                 }
                 
-                //double overtime = 30;
-                //if (stopWatch.Elapsed.TotalSeconds > overtime)
-                //{
-                //    Console.WriteLine("RunTickSequence running more than [overtime] seconds. Function stopped.");
-                //    stopWatch.Stop();
-                //    break;
-                //}
             }
             // Set target to zero
             ModCom.RunModbus(Register.TargetInput, (Int32)0);
-
             ModCom.RunModbus(Register.Mode, Mode.MotorOff);
 
             stopWatch.Stop();
-            //TODO if garbage collection was turned off, turn it on here
 
             // Convert units
             //RecordedTimes = TimeToSeconds(MotorRecordedTimes);
@@ -273,7 +272,6 @@ namespace Model
             List<Int32> ticks = new List<Int32>();
             for (int i = 0; i < velocities.Count; i++)
             {
-                //TODO this conversion is the same as for position. Check so that it is correct.
                 ticks.Add(-(int)Math.Round(velocities[i] * 10 * Hardware.TicksPerRev / Hardware.Pitch / Hardware.VelocityResolution));
             }
             return ticks;

@@ -1,27 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using OxyPlot;
-using OxyPlot.Series;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using Microsoft.Win32;
 
 namespace FlowCalibration
 {
     /// <summary>
-    /// Interaction logic for Page2.xaml
+    /// Interaction logic for ControlPage.xaml
     /// </summary>
     public partial class ControlPage : Page
     {
@@ -43,7 +29,6 @@ namespace FlowCalibration
             ViewModel.CurrentProfileName = Profiles_ComboBox.SelectedItem.ToString();
             ViewModel.UpdateProfile();     
         }
-
 
         private void Parameter_TextBox_PreviewKeyUp(object sender, RoutedEventArgs e)
         {
@@ -80,8 +65,10 @@ namespace FlowCalibration
         private void LoadProfile_Button_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openDialog = new OpenFileDialog();
-            if( openDialog.ShowDialog() == true)
+            openDialog.Filter = "CSV file (*.csv)|*.csv";
+            if ( openDialog.ShowDialog() == true)
             {
+                Profiles_ComboBox.SelectedItem = "Custom";
                 ViewModel.LoadProfile(openDialog.FileName);
             }
 
@@ -90,7 +77,10 @@ namespace FlowCalibration
         private void SaveProfile_Button_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveDialog = new SaveFileDialog();
-            if( saveDialog.ShowDialog() == true )
+            saveDialog.Filter = "CSV file (*.csv)|*.csv";
+            saveDialog.DefaultExt = "csv";
+            saveDialog.AddExtension = true;
+            if ( saveDialog.ShowDialog() == true )
             {
                 ViewModel.SaveProfile(saveDialog.FileName, ViewModel.ControlFlowPoints);
             }
@@ -116,7 +106,10 @@ namespace FlowCalibration
         private void SaveLoggedVolume_Button_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveDialog = new SaveFileDialog();
-            if( saveDialog.ShowDialog() == true )
+            saveDialog.Filter = "CSV file (*.csv)|*.csv";
+            saveDialog.DefaultExt = "csv";
+            saveDialog.AddExtension = true;
+            if ( saveDialog.ShowDialog() == true )
             {
                 ViewModel.SaveProfile(saveDialog.FileName, ViewModel.LogVolumePoints);
             }
@@ -125,7 +118,10 @@ namespace FlowCalibration
         private void SaveLoggedFlow_Button_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveDialog = new SaveFileDialog();
-            if( saveDialog.ShowDialog() == true )
+            saveDialog.Filter = "CSV file (*.csv)|*.csv";
+            saveDialog.DefaultExt = "csv";
+            saveDialog.AddExtension = true;
+            if ( saveDialog.ShowDialog() == true )
             {
                 ViewModel.SaveProfile(saveDialog.FileName, ViewModel.LogFlowPoints);
             }

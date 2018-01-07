@@ -1,12 +1,6 @@
 ﻿using System;
 using System.IO.Ports;
-using System.Net;
-using System.Net.Sockets;
-using System.Threading;
-using System.Linq;
-using Modbus.Data;
 using Modbus.Device;
-using Modbus.Utility;
 using Modbus.Serial;
 using System.Management;
 using System.Collections.Generic;
@@ -41,11 +35,11 @@ namespace Model
             Master = ModbusSerialMaster.CreateRtu(adapter);
         }
 
-        public static string getSerialPortName()
+        public static string GetSerialPortName()
         {
             return "COM3";
             //return "/dev/ttyUSB0"; // For Linux
-            string NameOfDevice = "Moxa USB Serial Port";
+            /*string NameOfDevice = "Moxa USB Serial Port";
             foreach (COMPortInfo comPort in COMPortInfo.GetCOMPortsInfo())
             {
                 if (comPort.Name.Equals(NameOfDevice, StringComparison.Ordinal))
@@ -54,7 +48,7 @@ namespace Model
                 }
 
             }
-            throw new System.ArgumentException("No device found");
+            throw new System.ArgumentException("No device found");*/
         }
 
         public void RunModbus(ushort registerStartAddress, Int32 data)
