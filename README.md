@@ -6,14 +6,24 @@ It is also possible to create flow profiles in external programs and save them a
 When the flow profile is run, the program will record the position at each sampling instance and with that information it will calculate the actual output volume and flow and presented to the user.
 
 ## Installation
-1) Download the file: FlowCalibrationSetup-v-1-0.zip.
-2) Extract the contents of the zip file.
-3) Run the setup application.
+1. Download the file: FlowCalibrationSetup-v-1-1.zip.
+2. Extract the contents of the zip file.
+3. Run the setup application.
 
 It is strongly recommended to also download the graphical user interface from Simplex Motion: http://simplexmotion.com/products/simplexmotiontool/. This is a safe way to test that the servo functions properly and that everything is correctly connected before running the FlowCalibration user interface.
 
 ## Usage
-...
+1. Set up the hardware properly: make sure the rig sits steady on the table, plug in the power to the servo, plug in the USB cable to the computer, make sure the safety relay has power.
+2. Open the program FlowCalibration Tool.
+3. Find the name of the serial port, for example by connecting with the servo through the Simplex Motion Tool.
+4. Press the connect button.
+5. Choose flow profile from the drop down list and set the amplitude, frequency, sampling interval and that the number of repetitions. (The values that the frequency, sampling interval, number of repetitions can take is limited as follows: the minimum frequency is 0.1 rad per second, the minimum sampling interval is 0.04 seconds and the maximum number of repetitions is 10). Keep in mind that the program doesn't account for the physical limitations of the rig, so don't start with a too large amplitude. 
+6. Manually move the syringe to a suitable starting position. (The servo can be moved by hand at all times except for when a flow profile is run.)
+7. Press the run button.
+8. When the run is complete, the results are shown under the Logger tab.
+
+_Flow profiles and results can be saved as CSV files (Comma Separated Values) with time in the 1st column and flow/volume in the 2nd column. (It is easy to import and export files like this in, for example, Matlab)_
+
 
 ## Getting started with developement
 
@@ -69,7 +79,11 @@ Model features that needs to be reached:
 
 ## Deploying the project/creating MSI installer
 1. Get the extension _Microsoft Visual Studio 2017 installer projects_ by going to Tools > Extensions and Upgrades… And find the package under the Online category.
-2.
+2. Right-click on the project _SetupFlowCalibration_ and choose _Build_.
+3. The setup.exe file and the Windows installer package will be in the Debug or Release folder under the SetupFlowCalibration project depending on your solution configuration.
+4. Take these two files and put them in a new folder containing the project name and the new version number and zip the folder.
+
+_For more information on how to set up a Windows installer project from scratch, see this link: https://youtu.be/HeDBYc3ybxc_
 
 ## ToDo
 * Make the program find the correct COM-port automatically.
