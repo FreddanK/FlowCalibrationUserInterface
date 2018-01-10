@@ -164,7 +164,7 @@ namespace FlowCalibration
             ProfileConverter = new ProfileConverter();
 
             USBConnected = false;
-            PortName = "COM1";
+            PortName = "COM3";
 
         }
 

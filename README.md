@@ -3,7 +3,7 @@
 This software is for controlling a developed calibration device which goal is to output a known flow of air using a precision syringe and a high-quality servomotor.
 The software consists of a graphical user interface and the backend for controlling the servomotor. With the graphical user interface, it is possible to define flow profiles as periodic function with specified sampling time, frequency, amplitude and the number of periods.
 It is also possible to create flow profiles in external programs and save them as CSV files and load them into the program.
-When the flow profile is run, the program will record the position at each sampling instance and with that information it will calculate the actual output volume and flow and presented to the user.
+When the flow profile is run, the program will record the position at each sampling instance and with that information it will calculate the actual output volume and flow and present it to the user.
 
 ## Installation
 1. Download the file: FlowCalibrationSetup-v-1-1.zip.

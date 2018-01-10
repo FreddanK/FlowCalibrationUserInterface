@@ -28,7 +28,7 @@ namespace Model
             public const Double MotorTorquePerTorque = 1000; // [motor Torue [mNm] per Torque [Nm]]
             public const Double PressureGain = 1; // [motor Pressure [VDC] to Pressure [?] gain]
             public const Double PressureBias = 0; // [motor Pressure [VDC] to Pressure [?] bias]
-            public const Int16 MaxTorque = 100;
+            public const Int16 MaxTorque = 200;
         }
         public struct Register
         {
